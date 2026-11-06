@@ -1,0 +1,1739 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fuel&Go — NextMind Interactive Presentation (v1 Initial)</title>
+  <meta name="description" content="NextMind Product Management Presentation: Fuel&Go unified fueling and EV charging platform.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    /* ==========================================================================
+       Fuel&Go Presentation System — Design Tokens & Core Theme
+       ========================================================================== */
+    :root {
+      --bg-dark: #080d1a;
+      --bg-card: rgba(15, 23, 42, 0.78);
+      --bg-card-hover: rgba(26, 38, 68, 0.85);
+      --bg-overlay: rgba(8, 13, 26, 0.92);
+      
+      --cyan-primary: #00f2fe;
+      --cyan-glow: rgba(0, 242, 254, 0.35);
+      --neon-green: #00ff87;
+      --green-glow: rgba(0, 255, 135, 0.35);
+      --accent-purple: #8b5cf6;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-glow: rgba(0, 242, 254, 0.25);
+      
+      --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --font-hebrew: 'Heebo', sans-serif;
+      
+      --transition-smooth: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      --slide-height: 100vh;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 15% 20%, rgba(0, 242, 254, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 85% 80%, rgba(0, 255, 135, 0.06) 0%, transparent 40%),
+        linear-gradient(180deg, #060913 0%, #0a1122 100%);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      overflow: hidden;
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* BiDi helper classes */
+    .bidi-mixed {
+      unicode-bidi: isolate;
+      direction: ltr;
+    }
+    .hebrew-text {
+      font-family: var(--font-hebrew), var(--font-sans);
+      direction: rtl;
+      unicode-bidi: isolate;
+      display: inline-block;
+    }
+    .currency-tag {
+      font-family: var(--font-mono);
+      unicode-bidi: isolate;
+      direction: ltr;
+      white-space: nowrap;
+    }
+
+    /* Presentation Layout Shell */
+    #presentation-app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100vw;
+      position: relative;
+    }
+
+    /* Top Navigation Bar */
+    .top-header {
+      height: 64px;
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-subtle);
+      background: rgba(8, 13, 26, 0.7);
+      backdrop-filter: blur(16px);
+      z-index: 100;
+    }
+
+    .brand-block {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 800;
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, var(--cyan-primary) 0%, var(--neon-green) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .logo-icon {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, var(--cyan-primary), var(--neon-green));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #060913;
+      font-weight: 900;
+      font-size: 14px;
+      box-shadow: 0 0 16px var(--cyan-glow);
+    }
+
+    .team-badge {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      background: rgba(0, 242, 254, 0.1);
+      color: var(--cyan-primary);
+      border: 1px solid rgba(0, 242, 254, 0.25);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+    }
+
+    .version-indicator {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--neon-green);
+      background: rgba(0, 255, 135, 0.08);
+      border: 1px solid rgba(0, 255, 135, 0.2);
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    .shortcut-hint {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .kbd-key {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-main);
+    }
+
+    /* Progress Bar */
+    .progress-track {
+      width: 100%;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.06);
+      position: relative;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 10%;
+      background: linear-gradient(90deg, var(--cyan-primary), var(--neon-green));
+      box-shadow: 0 0 12px var(--cyan-glow);
+      transition: width 0.4s ease;
+    }
+
+    /* Slides Viewport */
+    .viewport {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      padding: 2.5rem 4rem;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(30px) scale(0.98);
+      transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow-y: auto;
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(0) scale(1);
+    }
+
+    .slide.prev-slide {
+      transform: translateX(-30px) scale(0.98);
+      opacity: 0;
+    }
+
+    /* Slide Content Typography & Layout */
+    .slide-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--cyan-primary);
+      margin-bottom: 0.75rem;
+    }
+
+    .slide-tag::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--cyan-primary);
+      box-shadow: 0 0 8px var(--cyan-primary);
+    }
+
+    .slide-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.025em;
+      color: #ffffff;
+      margin-bottom: 0.75rem;
+    }
+
+    .slide-title span {
+      background: linear-gradient(135deg, var(--cyan-primary), var(--neon-green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .slide-subtitle {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      max-width: 850px;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    /* Grid Layouts */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.75rem;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 1.75rem;
+      backdrop-filter: blur(12px);
+      transition: var(--transition-smooth);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(0, 242, 254, 0.4), transparent);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-glow);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 242, 254, 0.1);
+    }
+
+    .card:hover::before {
+      opacity: 1;
+    }
+
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(0, 242, 254, 0.1);
+      color: var(--cyan-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 1.25rem;
+      border: 1px solid rgba(0, 242, 254, 0.2);
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 0.6rem;
+      color: #fff;
+    }
+
+    .card-desc {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .card-highlight {
+      margin-top: 1rem;
+      padding-top: 0.8rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--neon-green);
+    }
+
+    /* Slide 1 - Hero Specifics */
+    .hero-container {
+      max-width: 960px;
+    }
+    .hero-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: 9999px;
+      background: rgba(0, 242, 254, 0.08);
+      border: 1px solid rgba(0, 242, 254, 0.25);
+      color: var(--cyan-primary);
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+    .hero-title {
+      font-size: 3.8rem;
+      font-weight: 800;
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.25rem;
+    }
+    .hero-title span {
+      background: linear-gradient(135deg, #ffffff 30%, var(--cyan-primary) 80%, var(--neon-green) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-desc {
+      font-size: 1.25rem;
+      line-height: 1.6;
+      color: var(--text-muted);
+      margin-bottom: 2.5rem;
+      max-width: 780px;
+    }
+    .meta-box {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      padding: 1.5rem 2rem;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-subtle);
+      width: fit-content;
+    }
+    .meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .meta-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+    }
+    .meta-value {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    /* Interactive Demo Simulator (Slide 7) */
+    .simulator-container {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 2rem;
+      background: rgba(10, 17, 34, 0.85);
+      border: 1px solid var(--border-glow);
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    }
+    .sim-controls-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      border-right: 1px solid var(--border-subtle);
+      padding-right: 1.5rem;
+    }
+    .journey-tabs {
+      display: flex;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      padding: 4px;
+      gap: 4px;
+    }
+    .journey-tab {
+      flex: 1;
+      padding: 8px 12px;
+      text-align: center;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      transition: var(--transition-smooth);
+    }
+    .journey-tab.active {
+      background: var(--cyan-primary);
+      color: #060913;
+      box-shadow: 0 2px 10px var(--cyan-glow);
+    }
+    .sim-select-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .sim-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+    .sim-select {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      outline: none;
+      cursor: pointer;
+    }
+    .sim-select:focus {
+      border-color: var(--cyan-primary);
+    }
+    .sim-button {
+      background: linear-gradient(135deg, var(--cyan-primary), var(--neon-green));
+      color: #060913;
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 16px var(--cyan-glow);
+    }
+    .sim-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 22px var(--cyan-glow);
+    }
+    .sim-button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .sim-display-panel {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .sim-live-box {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .live-status-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      background: rgba(0, 255, 135, 0.15);
+      color: var(--neon-green);
+    }
+    .live-pulse {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--neon-green);
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0% { transform: scale(0.9); opacity: 0.7; }
+      50% { transform: scale(1.3); opacity: 1; }
+      100% { transform: scale(0.9); opacity: 0.7; }
+    }
+    .sim-meters {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+    .meter-card {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 1rem;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      text-align: center;
+    }
+    .meter-val {
+      font-family: var(--font-mono);
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--cyan-primary);
+    }
+    .meter-lbl {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .sim-progress-bar {
+      height: 10px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      overflow: hidden;
+      position: relative;
+    }
+    .sim-progress-inner {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--cyan-primary), var(--neon-green));
+      transition: width 0.3s ease;
+    }
+
+    /* Receipt Card */
+    .receipt-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px dashed rgba(255, 255, 255, 0.2);
+      border-radius: 14px;
+      padding: 1.2rem;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+    }
+    .receipt-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.4rem;
+    }
+
+    /* Cost Estimator (Slide 8) */
+    .calc-container {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 2rem;
+    }
+    .calc-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: 2rem;
+      backdrop-filter: blur(12px);
+    }
+    .input-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 1.2rem;
+    }
+    .input-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+    .calc-input {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      outline: none;
+      transition: var(--transition-smooth);
+    }
+    .calc-input:focus {
+      border-color: var(--cyan-primary);
+      box-shadow: 0 0 12px var(--cyan-glow);
+    }
+    .calc-slider {
+      width: 100%;
+      accent-color: var(--cyan-primary);
+      cursor: pointer;
+      margin-top: 6px;
+    }
+    .calc-result-box {
+      background: linear-gradient(145deg, rgba(15, 23, 42, 0.9), rgba(10, 30, 50, 0.8));
+      border: 1px solid var(--border-glow);
+      border-radius: 20px;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .calc-stat-hero {
+      font-family: var(--font-mono);
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--neon-green);
+      line-height: 1;
+      margin: 0.75rem 0;
+    }
+    .disclaimer-box {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 1rem;
+      line-height: 1.5;
+    }
+
+    /* Comparison Table (Slide 9) */
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      margin-top: 1rem;
+    }
+    .compare-table th, .compare-table td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .compare-table th {
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.06em;
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .compare-table tr:hover td {
+      background: rgba(255, 255, 255, 0.03);
+    }
+    .check-yes {
+      color: var(--neon-green);
+      font-weight: 700;
+    }
+    .check-no {
+      color: var(--text-dim);
+    }
+
+    /* Bottom Navigation Bar */
+    .bottom-bar {
+      height: 70px;
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--border-subtle);
+      background: rgba(8, 13, 26, 0.85);
+      backdrop-filter: blur(16px);
+      z-index: 100;
+    }
+
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-main);
+      padding: 8px 18px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition-smooth);
+    }
+
+    .nav-btn:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: var(--cyan-primary);
+      color: var(--cyan-primary);
+      transform: translateY(-1px);
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .slide-counter {
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+    .slide-counter span {
+      color: var(--cyan-primary);
+      font-weight: 700;
+    }
+
+    .dots-container {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.18);
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+
+    .dot.active {
+      width: 24px;
+      border-radius: 999px;
+      background: var(--cyan-primary);
+      box-shadow: 0 0 10px var(--cyan-glow);
+    }
+
+    .dot:hover:not(.active) {
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    /* Modal / Drawer for Slide Index */
+    .jump-btn {
+      background: transparent;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-dim);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+    .jump-btn:hover {
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Responsive Queries */
+    @media (max-width: 1024px) {
+      .grid-3, .grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .slide {
+        padding: 2rem 2rem;
+      }
+      .hero-title {
+        font-size: 2.8rem;
+      }
+      .simulator-container, .calc-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .grid-2, .grid-3, .grid-4 {
+        grid-template-columns: 1fr;
+      }
+      .slide-title {
+        font-size: 1.8rem;
+      }
+      .top-header {
+        padding: 0 1rem;
+      }
+      .shortcut-hint {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="presentation-app">
+    <!-- Header -->
+    <header class="top-header">
+      <div class="brand-block">
+        <div class="brand-logo">
+          <div class="logo-icon">⚡</div>
+          Fuel&Go
+        </div>
+        <span class="team-badge">Team NextMind</span>
+        <span class="version-indicator">v1.0.0 Initial</span>
+      </div>
+
+      <div class="header-actions">
+        <div class="shortcut-hint">
+          <span>Navigate:</span>
+          <span class="kbd-key">←</span>
+          <span class="kbd-key">→</span>
+          <span class="kbd-key">Space</span>
+        </div>
+        <button id="toggle-fullscreen" class="jump-btn" title="Toggle Fullscreen">⛶ Fullscreen</button>
+      </div>
+    </header>
+
+    <!-- Linear Progress Bar -->
+    <div class="progress-track">
+      <div id="progress-fill" class="progress-fill"></div>
+    </div>
+
+    <!-- Slide Viewport -->
+    <main class="viewport" id="viewport">
+
+      <!-- ==========================================
+           SLIDE 1: Introduction
+           ========================================== -->
+      <section class="slide active" data-slide="1">
+        <div class="hero-container">
+          <div class="hero-pill">
+            <span>🚀 Product Management Presentation</span>
+            <span>•</span>
+            <span>Interactive Prototype</span>
+          </div>
+          <h1 class="hero-title">
+            <span>Fuel&Go</span><br>
+            Unified Mobility Energy
+          </h1>
+          <p class="hero-desc">
+            The next-generation mobility platform uniting fossil fuel pumps and high-speed EV chargers into one frictionless, real-time discovery, activation, and digital payment ecosystem.
+          </p>
+
+          <div class="meta-box">
+            <div class="meta-item">
+              <span class="meta-label">Team</span>
+              <span class="meta-value">NextMind</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Document Version</span>
+              <span class="meta-value">v1.0.0 (PRD Aligned)</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Focus Area</span>
+              <span class="meta-value">Unified Fueling & EV Charging</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Evaluator Access</span>
+              <span class="meta-value">rmisegal@gmail.com</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 2: The Problem
+           ========================================== -->
+      <section class="slide" data-slide="2">
+        <div class="slide-tag">Market Friction</div>
+        <h2 class="slide-title">The Driver's Dilemma: <span>Fragmented Mobility</span></h2>
+        <p class="slide-subtitle">
+          Today's drivers are trapped between legacy physical fueling terminals and a chaotic, disjointed EV charging ecosystem.
+        </p>
+
+        <div class="grid-3">
+          <div class="card">
+            <div class="card-icon">📱</div>
+            <h3 class="card-title">1. App Fragmentation</h3>
+            <p class="card-desc">
+              Drivers shuffle between 4–6 separate mobile apps: station finders, EV networks (Cello, EV-Edge, Gnrgy), toll tags, and payment gateways. No single pane of glass exists.
+            </p>
+            <div class="card-highlight">Result: Cluttered user experience & high cognitive load</div>
+          </div>
+
+          <div class="card">
+            <div class="card-icon">⏳</div>
+            <h3 class="card-title">2. Queue & Status Uncertainty</h3>
+            <p class="card-desc">
+              EV drivers arrive at public chargers only to discover broken connectors or 40-minute wait lines. ICE drivers experience pump congestion without live advance visibility.
+            </p>
+            <div class="card-highlight">Result: Over 18% average detour and queuing waste</div>
+          </div>
+
+          <div class="card">
+            <div class="card-icon">💳</div>
+            <h3 class="card-title">3. Payment & Receipt Friction</h3>
+            <p class="card-desc">
+              Weather-worn pump PIN pads, incompatible RFID fobs, and missing paper receipts complicate expense reporting for private motorists and enterprise fleets alike.
+            </p>
+            <div class="card-highlight">Result: Lost tax write-offs & manual invoicing pain</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 3: Target Users & Needs
+           ========================================== -->
+      <section class="slide" data-slide="3">
+        <div class="slide-tag">Audience & Personas</div>
+        <h2 class="slide-title">Designed for <span>Every Modern Driver</span></h2>
+        <p class="slide-subtitle">
+          Tailored user experiences covering internal combustion engine (ICE) commuters, pure EV owners, and mixed commercial fleets.
+        </p>
+
+        <div class="grid-3">
+          <div class="card">
+            <div class="card-icon">🚗</div>
+            <h3 class="card-title">Private ICE Drivers</h3>
+            <p class="card-desc">
+              <strong>Need:</strong> Lightning-fast station discovery, live pump line visibility, pump-side contactless activation, and automated digital VAT receipts.
+            </p>
+            <div class="card-highlight">Goal: Sub-3 minute refueling with zero terminal touch</div>
+          </div>
+
+          <div class="card">
+            <div class="card-icon">⚡</div>
+            <h3 class="card-title">EV Commuters</h3>
+            <p class="card-desc">
+              <strong>Need:</strong> Real-time plug socket availability (AC vs. DC 150kW+), transparent kWh pricing, dynamic battery % target calculator, and plug reservation.
+            </p>
+            <div class="card-highlight">Goal: Predictable charging with zero range anxiety</div>
+          </div>
+
+          <div class="card">
+            <div class="card-icon">🚛</div>
+            <h3 class="card-title">Fleet & Enterprise</h3>
+            <p class="card-desc">
+              <strong>Need:</strong> Centralized multi-vehicle billing, consolidated monthly tax invoices, driver spending limits, and automated corporate expense synchronization.
+            </p>
+            <div class="card-highlight">Goal: 100% digital audit compliance and fleet tracking</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 4: Solution & Value Proposition
+           ========================================== -->
+      <section class="slide" data-slide="4">
+        <div class="slide-tag">The Solution</div>
+        <h2 class="slide-title">Fuel&Go: <span>One Tap, Any Energy</span></h2>
+        <p class="slide-subtitle">
+          A unified, cross-energy platform connecting smart stations, IoT pump controllers, and mobile drivers into a single continuous journey.
+        </p>
+
+        <div class="grid-4">
+          <div class="card">
+            <div class="card-icon">🗺️</div>
+            <h3 class="card-title">Unified Map</h3>
+            <p class="card-desc">Both petrol stations and EV fast-chargers displayed side-by-side with live status flags.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">📡</div>
+            <h3 class="card-title">Live Availability</h3>
+            <p class="card-desc">Real-time socket power, connector types (CCS/Type 2), and pump queue length updates.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">📲</div>
+            <h3 class="card-title">Remote Activation</h3>
+            <p class="card-desc">Authorize the pump or unlock the EV plug directly from the driver's phone with geofencing.</p>
+          </div>
+          <div class="card">
+            <div class="card-icon">🧾</div>
+            <h3 class="card-title">Instant Pay</h3>
+            <p class="card-desc">Biometric Apple/Google Pay, unified corporate billing, and bilingual digital PDF receipts.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 5: Core MVP Capabilities
+           ========================================== -->
+      <section class="slide" data-slide="5">
+        <div class="slide-tag">MVP Matrix</div>
+        <h2 class="slide-title">Feature Prioritization & <span>Scope</span></h2>
+        <p class="slide-subtitle">
+          Strategic product scoping delivering maximum user delight with rigorous technical viability.
+        </p>
+
+        <div class="grid-2">
+          <div class="card">
+            <h3 class="card-title" style="color: var(--cyan-primary);">✅ In-Scope MVP (Presented Demo)</h3>
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.8rem; margin-top: 1rem; font-size: 0.9rem; color: var(--text-muted);">
+              <li>🔹 <strong>Unified Discovery Engine:</strong> Mock station network with filter by energy type & amenities.</li>
+              <li>🔹 <strong>Dual Interactive Flows:</strong> Fueling vs. EV charging interactive execution simulation.</li>
+              <li>🔹 <strong>Dynamic Cost Calculator:</strong> Instant fuel & kWh cost engine with BiDi Israeli Shekel (<span class="currency-tag">₪</span>) support.</li>
+              <li>🔹 <strong>Digital Invoice Generation:</strong> Bilingual receipt output with itemized VAT breakdown.</li>
+              <li>🔹 <strong>State Architecture:</strong> Persistent session management and real-time simulator reset.</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3 class="card-title" style="color: var(--neon-green);">🔮 Production Roadmap (Post-MVP)</h3>
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.8rem; margin-top: 1rem; font-size: 0.9rem; color: var(--text-muted);">
+              <li>🔸 <strong>Native IoT Pump Controller API:</strong> Direct hardware handshake via OCPP 2.0.1 and IFSF protocols.</li>
+              <li>🔸 <strong>Smart AI Route Optimization:</strong> Multi-stop EV charging route planner with terrain & weather modeling.</li>
+              <li>🔸 <strong>Fleet ERP Integration:</strong> Direct sync with SAP, Priority, and corporate expense systems.</li>
+              <li>🔸 <strong>C-Store Click & Collect:</strong> Order coffee and convenience store snacks while charging.</li>
+              <li>🔸 <strong>Three.js 3D Virtual Station:</strong> Interactive 3D vehicle & charging bay spatial visualizer.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 6: User Journey
+           ========================================== -->
+      <section class="slide" data-slide="6">
+        <div class="slide-tag">Customer Journey</div>
+        <h2 class="slide-title">The Seamless <span>4-Step Flow</span></h2>
+        <p class="slide-subtitle">
+          Eliminating friction points from trip discovery to post-charge digital invoicing.
+        </p>
+
+        <div class="grid-4">
+          <div class="card">
+            <div style="font-family: var(--font-mono); font-size: 2rem; font-weight: 800; color: var(--cyan-primary); margin-bottom: 0.5rem;">01</div>
+            <h3 class="card-title">Discover</h3>
+            <p class="card-desc">Driver opens app; map pinpoints nearest available high-speed station matching plug type or fuel grade.</p>
+          </div>
+          <div class="card">
+            <div style="font-family: var(--font-mono); font-size: 2rem; font-weight: 800; color: var(--cyan-primary); margin-bottom: 0.5rem;">02</div>
+            <h3 class="card-title">Select Bay</h3>
+            <p class="card-desc">Driver arrives inside geofenced perimeter, confirms Bay #2 (Fuel) or DC Fast Charger #3.</p>
+          </div>
+          <div class="card">
+            <div style="font-family: var(--font-mono); font-size: 2rem; font-weight: 800; color: var(--neon-green); margin-bottom: 0.5rem;">03</div>
+            <h3 class="card-title">Energize</h3>
+            <p class="card-desc">System authorizes pump or initiates high-voltage EV handshake. Real-time meter tracks kWh/Liters.</p>
+          </div>
+          <div class="card">
+            <div style="font-family: var(--font-mono); font-size: 2rem; font-weight: 800; color: var(--neon-green); margin-bottom: 0.5rem;">04</div>
+            <h3 class="card-title">Auto-Pay</h3>
+            <p class="card-desc">Session concludes, nozzle re-hung. Digital receipt instantly delivered; driver drives off with zero delay.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 7: Interactive Demo Simulator
+           ========================================== -->
+      <section class="slide" data-slide="7">
+        <div class="slide-tag">Live Demonstration</div>
+        <h2 class="slide-title">Interactive <span>Station Flow Simulator</span></h2>
+        <p class="slide-subtitle">
+          Experience the live activation lifecycle. Select your energy path, choose a bay, and trigger the automated transaction.
+        </p>
+
+        <div class="simulator-container">
+          <!-- Controls Panel -->
+          <div class="sim-controls-panel">
+            <div class="sim-select-group">
+              <span class="sim-label">Choose Energy Path</span>
+              <div class="journey-tabs">
+                <button class="journey-tab active" id="tab-fuel" onclick="setSimMode('fuel')">⛽ Fueling</button>
+                <button class="journey-tab" id="tab-ev" onclick="setSimMode('ev')">⚡ EV Charging</button>
+              </div>
+            </div>
+
+            <div class="sim-select-group">
+              <span class="sim-label">Select Station</span>
+              <select id="sim-station" class="sim-select">
+                <option value="hub-central">Fuel&Go Hub — Central Tel Aviv</option>
+                <option value="hub-hightech">Fuel&Go Hub — Herzliya Pituach</option>
+                <option value="hub-highway">Fuel&Go Hub — Highway 6 North</option>
+              </select>
+            </div>
+
+            <div class="sim-select-group">
+              <span class="sim-label">Select Bay / Connector</span>
+              <select id="sim-bay" class="sim-select">
+                <!-- Dynamically populated -->
+              </select>
+            </div>
+
+            <button id="sim-start-btn" class="sim-button" onclick="startSimulation()">
+              ▶ Authorize & Start
+            </button>
+
+            <button id="sim-reset-btn" class="jump-btn" style="width: 100%;" onclick="resetSimulation()">
+              ↺ Reset Simulator
+            </button>
+          </div>
+
+          <!-- Display & Meter Panel -->
+          <div class="sim-display-panel">
+            <div class="sim-live-box">
+              <div class="live-status-header">
+                <div>
+                  <span id="sim-status-title" style="font-weight: 700; font-size: 1.1rem;">Standby — Awaiting Bay Selection</span>
+                  <div id="sim-status-subtitle" style="font-size: 0.8rem; color: var(--text-muted);">Station IoT Link: Connected (Mock API)</div>
+                </div>
+                <div class="live-badge">
+                  <div class="live-pulse"></div>
+                  <span id="sim-status-badge">READY</span>
+                </div>
+              </div>
+
+              <!-- Progress Bar -->
+              <div class="sim-progress-bar">
+                <div id="sim-bar-fill" class="sim-progress-inner"></div>
+              </div>
+
+              <!-- Meters -->
+              <div class="sim-meters">
+                <div class="meter-card">
+                  <div id="meter-volume" class="meter-val">0.0</div>
+                  <div id="meter-volume-lbl" class="meter-lbl">Liters Dispensed</div>
+                </div>
+                <div class="meter-card">
+                  <div id="meter-rate" class="meter-val">0.0</div>
+                  <div id="meter-rate-lbl" class="meter-lbl">Flow Rate (L/min)</div>
+                </div>
+                <div class="meter-card">
+                  <div id="meter-cost" class="meter-val">₪ 0.00</div>
+                  <div class="meter-lbl">Current Total</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Receipt Container -->
+            <div id="receipt-container" style="display: none; margin-top: 1rem;">
+              <div class="receipt-card">
+                <div style="text-align: center; font-weight: 800; color: var(--cyan-primary); margin-bottom: 0.5rem;">
+                  ⚡ FUEL&GO DIGITAL TAX INVOICE / קבלה דיגיטלית
+                </div>
+                <div class="receipt-row">
+                  <span>Transaction ID:</span>
+                  <span id="rec-id">TX-892410</span>
+                </div>
+                <div class="receipt-row">
+                  <span>Station / תחנה:</span>
+                  <span id="rec-station">Hub Central Tel Aviv</span>
+                </div>
+                <div class="receipt-row">
+                  <span>Bay & Grade:</span>
+                  <span id="rec-bay">Pump #2 (95 Octane)</span>
+                </div>
+                <div class="receipt-row">
+                  <span>Energy Delivered:</span>
+                  <span id="rec-units">38.40 L</span>
+                </div>
+                <div class="receipt-row" style="border-top: 1px dashed rgba(255,255,255,0.2); padding-top: 4px; font-weight: 700; color: var(--neon-green);">
+                  <span>Total Paid (כולל מע"מ):</span>
+                  <span id="rec-total">₪ 301.44</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 8: Cost Estimator (Dynamic Calculator)
+           ========================================== -->
+      <section class="slide" data-slide="8">
+        <div class="slide-tag">Financial Engine</div>
+        <h2 class="slide-title">Live Cost <span>Estimator & Energy Math</span></h2>
+        <p class="slide-subtitle">
+          Real-time computational model evaluating energy costs, battery capacity, and potential ICE vs. EV savings.
+        </p>
+
+        <div class="calc-container">
+          <!-- Inputs Column -->
+          <div class="calc-box">
+            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; color: var(--cyan-primary);">
+              Energy Parameters (מחשבון עלויות)
+            </h3>
+
+            <!-- EV Battery Size -->
+            <div class="input-row">
+              <label class="input-label">
+                <span>Battery Capacity (קיבולת סוללה)</span>
+                <span id="lbl-capacity" class="currency-tag">77 kWh</span>
+              </label>
+              <input type="range" id="input-capacity" class="calc-slider" min="30" max="120" value="77" oninput="updateCostCalculator()">
+            </div>
+
+            <!-- Start % -->
+            <div class="input-row">
+              <label class="input-label">
+                <span>Current State of Charge (רמת טעינה נוכחית)</span>
+                <span id="lbl-soc-curr" class="currency-tag">20%</span>
+              </label>
+              <input type="range" id="input-soc-curr" class="calc-slider" min="5" max="90" value="20" oninput="updateCostCalculator()">
+            </div>
+
+            <!-- Target % -->
+            <div class="input-row">
+              <label class="input-label">
+                <span>Target State of Charge (יעד טעינה)</span>
+                <span id="lbl-soc-target" class="currency-tag">80%</span>
+              </label>
+              <input type="range" id="input-soc-target" class="calc-slider" min="20" max="100" value="80" oninput="updateCostCalculator()">
+            </div>
+
+            <!-- EV Electricity Tariff -->
+            <div class="input-row">
+              <label class="input-label">
+                <span>EV Tariff (מחיר לקוט״ש)</span>
+                <span id="lbl-ev-price" class="currency-tag">₪ 1.85 / kWh</span>
+              </label>
+              <input type="range" id="input-ev-price" class="calc-slider" min="0.60" max="3.00" step="0.05" value="1.85" oninput="updateCostCalculator()">
+            </div>
+
+            <!-- Equivalent Fuel Price -->
+            <div class="input-row">
+              <label class="input-label">
+                <span>Benchmark Fuel Price (מחיר בנזין 95)</span>
+                <span id="lbl-fuel-price" class="currency-tag">₪ 7.85 / Liter</span>
+              </label>
+              <input type="range" id="input-fuel-price" class="calc-slider" min="6.00" max="9.50" step="0.05" value="7.85" oninput="updateCostCalculator()">
+            </div>
+          </div>
+
+          <!-- Results Column -->
+          <div class="calc-result-box">
+            <div>
+              <div style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted);">
+                Estimated Session Cost (עלות טעינה מוערכת)
+              </div>
+              <div id="res-ev-cost" class="calc-stat-hero">₪ 85.47</div>
+              
+              <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1rem;">
+                <div class="receipt-row">
+                  <span style="color: var(--text-muted);">Energy to Deliver:</span>
+                  <span id="res-kwh-needed" style="font-weight: 700; color: #fff;">46.20 kWh</span>
+                </div>
+                <div class="receipt-row">
+                  <span style="color: var(--text-muted);">Equivalent ICE Fuel Cost:</span>
+                  <span id="res-ice-equiv" style="font-weight: 700; color: var(--accent-rose);">₪ 251.20</span>
+                </div>
+                <div class="receipt-row" style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 6px;">
+                  <span style="color: var(--neon-green); font-weight: 700;">Direct Driver Savings:</span>
+                  <span id="res-savings" style="font-weight: 800; color: var(--neon-green);">₪ 165.73 (66%)</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="disclaimer-box">
+              <strong>Calculation Assumptions (הנחות חישוב):</strong><br>
+              Formula: $\text{Energy} = \text{Capacity} \times \frac{\text{Target\%} - \text{Current\%}}{100}$. Excludes battery thermal cooling overhead, dynamic peak-demand network surcharges, and local parking municipality fees.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 9: Business Model & Market Matrix
+           ========================================== -->
+      <section class="slide" data-slide="9">
+        <div class="slide-tag">Strategic Positioning</div>
+        <h2 class="slide-title">Competitive Edge & <span>Monetization</span></h2>
+        <p class="slide-subtitle">
+          How Fuel&Go outpaces legacy parking apps and single-network EV operators with an integrated platform model.
+        </p>
+
+        <div class="card" style="margin-bottom: 1.5rem;">
+          <table class="compare-table">
+            <thead>
+              <tr>
+                <th>Capability / Feature</th>
+                <th style="color: var(--cyan-primary);">Fuel&Go (NextMind)</th>
+                <th>Waze / Google Maps</th>
+                <th>Pango / Cello</th>
+                <th>Single EV Apps</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Unified Fuel & EV Sockets</strong></td>
+                <td class="check-yes">✔ Fully Integrated</td>
+                <td class="check-no">✖ Discovery Only</td>
+                <td class="check-no">✖ Fuel Only</td>
+                <td class="check-no">✖ EV Only</td>
+              </tr>
+              <tr>
+                <td><strong>Real-Time Bay Availability</strong></td>
+                <td class="check-yes">✔ Live IoT Feed</td>
+                <td class="check-no">✖ User Crowdsource</td>
+                <td class="check-no">✖ None</td>
+                <td class="check-yes">✔ Own Network Only</td>
+              </tr>
+              <tr>
+                <td><strong>In-App Remote Activation</strong></td>
+                <td class="check-yes">✔ Contactless Pump/Plug</td>
+                <td class="check-no">✖ None</td>
+                <td class="check-yes">✔ Fuel Only</td>
+                <td class="check-yes">✔ EV Only</td>
+              </tr>
+              <tr>
+                <td><strong>BiDi & Automated Tax Invoices</strong></td>
+                <td class="check-yes">✔ Full Compliance</td>
+                <td class="check-no">✖ None</td>
+                <td class="check-yes">✔ Basic</td>
+                <td class="check-no">✖ Limited</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="grid-3">
+          <div class="card">
+            <h3 class="card-title" style="font-size: 1.05rem;">SaaS & Station Take Rate</h3>
+            <p class="card-desc">0.8% - 1.2% micro-transaction fee per digital refueling/charging session paid by station networks.</p>
+          </div>
+          <div class="card">
+            <h3 class="card-title" style="font-size: 1.05rem;">Fleet Management Tier</h3>
+            <p class="card-desc">Monthly enterprise B2B subscription for corporate fleets providing consolidated billing & tax reports.</p>
+          </div>
+          <div class="card">
+            <h3 class="card-title" style="font-size: 1.05rem;">Targeted Retail Cross-Sell</h3>
+            <p class="card-desc">High-margin in-store food & beverage promotions delivered during the 20-minute dwell charging window.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 10: Summary, Limitations & Roadmap
+           ========================================== -->
+      <section class="slide" data-slide="10">
+        <div class="hero-container">
+          <div class="slide-tag">Conclusion & Next Steps</div>
+          <h2 class="slide-title">Conclusion & <span>Future Roadmap</span></h2>
+          <p class="slide-subtitle">
+            Delivering an academic and technical showcase of end-to-end product strategy by Team NextMind.
+          </p>
+
+          <div class="grid-2" style="margin-bottom: 2rem;">
+            <div class="card">
+              <h3 class="card-title" style="color: var(--cyan-primary);">Project Limitations (Disclaimer)</h3>
+              <p class="card-desc">
+                • <strong>Data Mocking:</strong> Pump telemetry and station availability rely on client-side simulation.<br>
+                • <strong>Payment Gateways:</strong> Digital receipt generation is simulated locally without live credit card processing.<br>
+                • <strong>Scope:</strong> Demonstrates core interaction architecture for academic evaluation.
+              </p>
+            </div>
+
+            <div class="card">
+              <h3 class="card-title" style="color: var(--neon-green);">Iterative Milestone Plan</h3>
+              <p class="card-desc">
+                • <strong>v1 (Current):</strong> Complete 10-slide core presentation, interactive flow simulator & live calculator.<br>
+                • <strong>v2 (Next):</strong> Integration of PyScript / Python WebAssembly execution for financial analytics.<br>
+                • <strong>v3 (Final):</strong> High-fidelity Three.js 3D vehicle & charging hub visualization with orbital controls.
+              </p>
+            </div>
+          </div>
+
+          <div class="meta-box" style="width: 100%; justify-content: space-between;">
+            <div>
+              <span class="meta-label">Presented by</span>
+              <div class="meta-value">Team NextMind</div>
+            </div>
+            <div>
+              <span class="meta-label">Evaluator & Feedback</span>
+              <div class="meta-value">rmisegal@gmail.com</div>
+            </div>
+            <div>
+              <span class="meta-label">Repository Status</span>
+              <div class="meta-value" style="color: var(--neon-green);">Git Synced & Versioned</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Bottom Controls Bar -->
+    <footer class="bottom-bar">
+      <div class="nav-controls">
+        <button id="btn-prev" class="nav-btn" onclick="prevSlide()">
+          <span>←</span> Previous
+        </button>
+        <button id="btn-next" class="nav-btn" onclick="nextSlide()">
+          Next <span>→</span>
+        </button>
+      </div>
+
+      <div class="dots-container" id="dots-container">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <div class="slide-counter">
+        Slide <span id="current-slide-num">01</span> / <span id="total-slides-num">10</span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Interactive JavaScript Engine -->
+  <script>
+    /* ==========================================================================
+       Slide Navigation Engine
+       ========================================================================== */
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    let currentSlideIndex = 0;
+
+    const progressFill = document.getElementById('progress-fill');
+    const currentSlideNumEl = document.getElementById('current-slide-num');
+    const totalSlidesNumEl = document.getElementById('total-slides-num');
+    const dotsContainer = document.getElementById('dots-container');
+    const btnPrev = document.getElementById('btn-prev');
+    const btnNext = document.getElementById('btn-next');
+
+    // Initialize slide indicators
+    function initSlides() {
+      totalSlidesNumEl.textContent = String(totalSlides).padStart(2, '0');
+      dotsContainer.innerHTML = '';
+      slides.forEach((_, idx) => {
+        const dot = document.createElement('div');
+        dot.className = `dot ${idx === 0 ? 'active' : ''}`;
+        dot.title = `Jump to Slide ${idx + 1}`;
+        dot.addEventListener('click', () => goToSlide(idx));
+        dotsContainer.appendChild(dot);
+      });
+      updateSlideView();
+    }
+
+    function updateSlideView() {
+      slides.forEach((slide, idx) => {
+        slide.classList.remove('active', 'prev-slide');
+        if (idx === currentSlideIndex) {
+          slide.classList.add('active');
+        } else if (idx < currentSlideIndex) {
+          slide.classList.add('prev-slide');
+        }
+      });
+
+      // Update dots
+      const dots = dotsContainer.querySelectorAll('.dot');
+      dots.forEach((dot, idx) => {
+        dot.classList.toggle('active', idx === currentSlideIndex);
+      });
+
+      // Update counter and progress bar
+      currentSlideNumEl.textContent = String(currentSlideIndex + 1).padStart(2, '0');
+      const progressPercent = ((currentSlideIndex + 1) / totalSlides) * 100;
+      progressFill.style.width = `${progressPercent}%`;
+
+      // Update button states
+      btnPrev.disabled = currentSlideIndex === 0;
+      btnNext.disabled = currentSlideIndex === totalSlides - 1;
+    }
+
+    function nextSlide() {
+      if (currentSlideIndex < totalSlides - 1) {
+        currentSlideIndex++;
+        updateSlideView();
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlideIndex > 0) {
+        currentSlideIndex--;
+        updateSlideView();
+      }
+    }
+
+    function goToSlide(index) {
+      if (index >= 0 && index < totalSlides) {
+        currentSlideIndex = index;
+        updateSlideView();
+      }
+    }
+
+    // Keyboard navigation
+    window.addEventListener('keydown', (e) => {
+      if (['ArrowRight', 'Space', 'PageDown'].includes(e.code)) {
+        e.preventDefault();
+        nextSlide();
+      } else if (['ArrowLeft', 'PageUp'].includes(e.code)) {
+        e.preventDefault();
+        prevSlide();
+      } else if (e.code === 'Home') {
+        e.preventDefault();
+        goToSlide(0);
+      } else if (e.code === 'End') {
+        e.preventDefault();
+        goToSlide(totalSlides - 1);
+      }
+    });
+
+    // Fullscreen Toggle
+    document.getElementById('toggle-fullscreen').addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    });
+
+    /* ==========================================================================
+       Interactive Demo Flow Simulator (Slide 7)
+       ========================================================================== */
+    let simMode = 'fuel'; // 'fuel' or 'ev'
+    let simInterval = null;
+    let simActive = false;
+
+    const bayOptions = {
+      fuel: [
+        { id: 'p1', name: 'Pump #1 — Unleaded 95 (Available)' },
+        { id: 'p2', name: 'Pump #2 — Unleaded 95 & Diesel (Recommended)' },
+        { id: 'p3', name: 'Pump #3 — Premium 98 (Available)' },
+        { id: 'p4', name: 'Pump #4 — Unleaded 95 (Occupied)' }
+      ],
+      ev: [
+        { id: 'c1', name: 'Fast Bay #1 — CCS 150kW DC (Available)' },
+        { id: 'c2', name: 'Fast Bay #2 — CCS 300kW Ultra-Fast (Available)' },
+        { id: 'c3', name: 'Bay #3 — Type 2 22kW AC (Available)' },
+        { id: 'c4', name: 'Fast Bay #4 — CCS 150kW DC (In Use)' }
+      ]
+    };
+
+    function setSimMode(mode) {
+      if (simActive) return;
+      simMode = mode;
+      document.getElementById('tab-fuel').classList.toggle('active', mode === 'fuel');
+      document.getElementById('tab-ev').classList.toggle('active', mode === 'ev');
+      
+      const baySelect = document.getElementById('sim-bay');
+      baySelect.innerHTML = '';
+      bayOptions[mode].forEach(opt => {
+        const option = document.createElement('option');
+        option.value = opt.id;
+        option.textContent = opt.name;
+        baySelect.appendChild(option);
+      });
+
+      if (mode === 'fuel') {
+        document.getElementById('meter-volume-lbl').textContent = 'Liters Dispensed';
+        document.getElementById('meter-rate-lbl').textContent = 'Flow Rate (L/min)';
+      } else {
+        document.getElementById('meter-volume-lbl').textContent = 'Energy Delivered (kWh)';
+        document.getElementById('meter-rate-lbl').textContent = 'Charging Speed (kW)';
+      }
+      resetSimulation();
+    }
+
+    function startSimulation() {
+      if (simActive) return;
+      simActive = true;
+      
+      const startBtn = document.getElementById('sim-start-btn');
+      startBtn.disabled = true;
+      document.getElementById('sim-status-title').textContent = 'Authorizing & Handshaking with Station IoT...';
+      document.getElementById('sim-status-badge').textContent = 'CONNECTING';
+      document.getElementById('receipt-container').style.display = 'none';
+
+      let progress = 0;
+      let units = 0;
+      const targetUnits = simMode === 'fuel' ? 42.5 : 38.0;
+      const rate = simMode === 'fuel' ? 28.5 : 142.0;
+      const pricePerUnit = simMode === 'fuel' ? 7.85 : 1.85;
+
+      setTimeout(() => {
+        document.getElementById('sim-status-title').textContent = simMode === 'fuel' 
+          ? 'Dispensing Fuel — Unleaded 95...' 
+          : 'High Voltage Charging — DC Fast 150kW...';
+        document.getElementById('sim-status-badge').textContent = 'ENERGIZING';
+
+        simInterval = setInterval(() => {
+          progress += 2.5;
+          units = (progress / 100) * targetUnits;
+          const currentCost = units * pricePerUnit;
+
+          document.getElementById('sim-bar-fill').style.width = `${progress}%`;
+          document.getElementById('meter-volume').textContent = units.toFixed(2);
+          document.getElementById('meter-rate').textContent = (rate + (Math.random() * 2 - 1)).toFixed(1);
+          document.getElementById('meter-cost').textContent = `₪ ${currentCost.toFixed(2)}`;
+
+          if (progress >= 100) {
+            clearInterval(simInterval);
+            finishSimulation(units, currentCost);
+          }
+        }, 100);
+      }, 700);
+    }
+
+    function finishSimulation(totalUnits, totalCost) {
+      simActive = false;
+      document.getElementById('sim-status-title').textContent = 'Session Complete — Auto-Billed via Apple Pay';
+      document.getElementById('sim-status-badge').textContent = 'COMPLETED';
+      document.getElementById('meter-rate').textContent = '0.0';
+
+      const stationSelect = document.getElementById('sim-station');
+      const baySelect = document.getElementById('sim-bay');
+      
+      document.getElementById('rec-station').textContent = stationSelect.options[stationSelect.selectedIndex].text;
+      document.getElementById('rec-bay').textContent = baySelect.options[baySelect.selectedIndex].text.split('(')[0];
+      document.getElementById('rec-units').textContent = simMode === 'fuel' 
+        ? `${totalUnits.toFixed(2)} Liters` 
+        : `${totalUnits.toFixed(2)} kWh`;
+      document.getElementById('rec-total').textContent = `₪ ${totalCost.toFixed(2)}`;
+      document.getElementById('rec-id').textContent = `TX-${Math.floor(100000 + Math.random() * 900000)}`;
+
+      document.getElementById('receipt-container').style.display = 'block';
+      document.getElementById('sim-start-btn').disabled = false;
+    }
+
+    function resetSimulation() {
+      if (simInterval) clearInterval(simInterval);
+      simActive = false;
+      document.getElementById('sim-bar-fill').style.width = '0%';
+      document.getElementById('meter-volume').textContent = '0.0';
+      document.getElementById('meter-rate').textContent = '0.0';
+      document.getElementById('meter-cost').textContent = '₪ 0.00';
+      document.getElementById('sim-status-title').textContent = 'Standby — Ready for Bay Selection';
+      document.getElementById('sim-status-badge').textContent = 'READY';
+      document.getElementById('receipt-container').style.display = 'none';
+      document.getElementById('sim-start-btn').disabled = false;
+    }
+
+    /* ==========================================================================
+       Cost Estimator & Calculation Engine (Slide 8)
+       ========================================================================== */
+    function updateCostCalculator() {
+      const capacity = parseFloat(document.getElementById('input-capacity').value);
+      let socCurr = parseFloat(document.getElementById('input-soc-curr').value);
+      let socTarget = parseFloat(document.getElementById('input-soc-target').value);
+      const evPrice = parseFloat(document.getElementById('input-ev-price').value);
+      const fuelPrice = parseFloat(document.getElementById('input-fuel-price').value);
+
+      // Validate boundary conditions
+      if (socCurr >= socTarget) {
+        socTarget = Math.min(100, socCurr + 5);
+        document.getElementById('input-soc-target').value = socTarget;
+      }
+
+      // Update labels
+      document.getElementById('lbl-capacity').textContent = `${capacity} kWh`;
+      document.getElementById('lbl-soc-curr').textContent = `${socCurr}%`;
+      document.getElementById('lbl-soc-target').textContent = `${socTarget}%`;
+      document.getElementById('lbl-ev-price').textContent = `₪ ${evPrice.toFixed(2)} / kWh`;
+      document.getElementById('lbl-fuel-price').textContent = `₪ ${fuelPrice.toFixed(2)} / Liter`;
+
+      // Math calculations
+      const deltaPercent = (socTarget - socCurr) / 100;
+      const energyNeeded = capacity * deltaPercent;
+      const totalEvCost = energyNeeded * evPrice;
+
+      // Equivalent ICE calculation: average EV efficiency ~18 kWh / 100km; ICE car ~7.5 L / 100km
+      const estimatedKmRange = (energyNeeded / 18.0) * 100;
+      const equivalentFuelLiters = (estimatedKmRange / 100) * 7.5;
+      const equivalentIceCost = equivalentFuelLiters * fuelPrice;
+      const netSavings = Math.max(0, equivalentIceCost - totalEvCost);
+      const savingsPercent = equivalentIceCost > 0 ? (netSavings / equivalentIceCost) * 100 : 0;
+
+      // Update DOM
+      document.getElementById('res-ev-cost').textContent = `₪ ${totalEvCost.toFixed(2)}`;
+      document.getElementById('res-kwh-needed').textContent = `${energyNeeded.toFixed(2)} kWh`;
+      document.getElementById('res-ice-equiv').textContent = `₪ ${equivalentIceCost.toFixed(2)}`;
+      document.getElementById('res-savings').textContent = `₪ ${netSavings.toFixed(2)} (${savingsPercent.toFixed(0)}%)`;
+    }
+
+    // Initialize components on load
+    window.addEventListener('DOMContentLoaded', () => {
+      initSlides();
+      setSimMode('fuel');
+      updateCostCalculator();
+    });
+  </script>
+</body>
+</html>
