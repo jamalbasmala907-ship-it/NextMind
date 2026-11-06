@@ -35,3 +35,22 @@ This log records the engineering prompts, requirements alignment, and architectu
   3. **Python Calculator & Interactivity:** Integrated WebAssembly Pyodide execution with pure Python script evaluation for EV charging and ICE benchmark costs with Israeli Shekels (`₪`).
   4. **Three.js 3D Animation:** Integrated 3D station workflow scene (Slide 6) with interactive orbit controls, vehicle arrival, fuel dispenser, high-speed EV charger, animated energy particle stream, and 4-stage workflow tracking.
   5. **Snapshot & Git Workflow:** Save snapshot `Sub_NextMind/v2_calculator.html`, update `current_version.html`, stage all changes, commit: `'Add Python calculator, Three.js 3D workflow animation, color theme, team names, and logo'`, and push to GitHub.
+
+
+---
+
+## Iteration 3: Version 3 (v3_refinement) Milestone
+
+### Prompt Summary
+- **Goal:** Implement user feedback and UI refinements:
+  1. **Dropdown Menu UI Fix:** Fix station hub and bay selector dropdown options where unselected text appeared white/hidden until hovered. Enforce bright Orange (`#ff8c38`) option text color with high-contrast styling visible at all times across all browsers and platforms.
+  2. **MVP User Flow Visualization:** Generate and embed a sequential series of UI/process wireframe representations illustrating the complete end-to-end driver journey:
+     - Stage 01: Smart Discovery & Filter (Dual fossil pumps + EV fast chargers).
+     - Stage 02: Geofence Bay Selection (GPS perimeter trigger & socket matching).
+     - Stage 03: Live Energizing (In-app authorization & real-time telemetry).
+     - Stage 04: Contactless Auto-Pay & Bilingual VAT Invoice (Apple/Google Pay & 17% VAT).
+  3. **Version Tracking & Git Workflow:**
+     - Created vector wireframe asset `assets/mvp-user-flow.svg`.
+     - Saved snapshot `Sub_NextMind/v3_refinement.html`.
+     - Updated `current_version.html`.
+     - Staged changes, committed: `'Fix dropdown text visibility to orange and add MVP User Flow sequence'`, and pushed to GitHub.

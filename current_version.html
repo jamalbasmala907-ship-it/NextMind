@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fuel&Go — Version 2 (v2_calculator) | NextMind</title>
-  <meta name="description" content="Fuel&Go Interactive Presentation v2: Python-Powered Financial Calculator & Three.js 3D Workflow by Basmala Jamal & Maria Mnasra (Team NextMind)">
+  <title>Fuel&Go — Version 3 (v3_refinement) | NextMind</title>
+  <meta name="description" content="Fuel&Go Interactive Presentation v3: User Flow Wireframes, High-Visibility UI & Python Engine by Basmala Jamal & Maria Mnasra (Team NextMind)">
 
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="assets/fuelandgo-icon.svg">
@@ -553,6 +553,134 @@
       box-shadow: 0 8px 24px var(--orange-glow);
     }
 
+    /* ==========================================================================
+       High-Visibility Dropdown Menu & Orange Option Styling (UI Legibility Fix)
+       ========================================================================== */
+    .station-dropdown, select.sim-select, select {
+      width: 100% !important;
+      background-color: #0b1528 !important;
+      color: #ff8c38 !important; /* High-visibility warm orange text */
+      border: 1.5px solid rgba(255, 140, 56, 0.45) !important;
+      border-radius: 10px !important;
+      padding: 11px 14px !important;
+      font-family: var(--font-sans) !important;
+      font-size: 0.92rem !important;
+      font-weight: 700 !important;
+      outline: none !important;
+      cursor: pointer !important;
+      transition: var(--transition-smooth) !important;
+    }
+
+    .station-dropdown:focus, select.sim-select:focus, select:focus {
+      border-color: var(--blue-primary) !important;
+      box-shadow: 0 0 16px var(--blue-glow) !important;
+    }
+
+    /* Explicit Orange Option Styling: Always clearly legible without requiring hover */
+    .station-dropdown option, select.sim-select option, select option {
+      background-color: #070e1b !important;
+      color: #ff8c38 !important; /* Orange text color always visible */
+      font-weight: 700 !important;
+      font-size: 0.92rem !important;
+      padding: 12px 14px !important;
+    }
+
+    .station-dropdown option:checked, select option:checked {
+      background-color: #142442 !important;
+      color: #00f2fe !important; /* Cyan active check */
+      font-weight: 800 !important;
+    }
+
+    .station-dropdown option:hover, select option:hover {
+      background-color: #1d3660 !important;
+      color: #00ff87 !important;
+    }
+
+    /* ==========================================================================
+       MVP User Flow Visualization Wireframe Styles
+       ========================================================================== */
+    .mvp-flow-wrapper {
+      background: rgba(11, 20, 38, 0.85);
+      border: 1px solid var(--border-blue);
+      border-radius: 20px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
+    }
+
+    .mvp-flow-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .mvp-flow-title {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mvp-flow-svg-box {
+      width: 100%;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: #060b16;
+      margin-bottom: 1.25rem;
+    }
+
+    .mvp-flow-svg-img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .flow-steps-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+
+    .flow-step-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 1rem;
+      position: relative;
+      transition: var(--transition-smooth);
+    }
+
+    .flow-step-card:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .flow-step-num {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      margin-bottom: 4px;
+    }
+
+    .flow-step-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .flow-step-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
     /* Python Calculator (Slide 8) */
     .py-calc-grid {
       display: grid;
@@ -875,7 +1003,7 @@
           <div class="pulse-dot"></div>
           <span id="py-status-indicator">Python WASM Engine: Ready</span>
         </div>
-        <span class="version-indicator">v2.0 (v2_calculator)</span>
+        <span class="version-indicator">v3.0 (v3_refinement)</span>
         <div class="shortcut-hint">
           <span class="kbd-key">←</span>
           <span class="kbd-key">→</span>
@@ -1073,33 +1201,87 @@
       </section>
 
       <!-- ==========================================
-           SLIDE 5: Core MVP Capabilities
+           SLIDE 5: Core MVP Capabilities & User Flow
            ========================================== -->
       <section class="slide" data-slide="5">
-        <div class="slide-tag tag-blue">MVP Prioritization</div>
-        <h2 class="slide-title">Core MVP Scope &amp; <span class="gradient-blue">Capability Matrix</span></h2>
+        <div class="slide-tag tag-blue">MVP Architecture &amp; User Flow</div>
+        <h2 class="slide-title">Core MVP Capabilities &amp; <span class="gradient-tri">Sequential User Flow</span></h2>
         <p class="slide-subtitle">
-          Strategic product scoping delivering maximum user delight with rigorous technical viability.
+          A cohesive product architecture: 4 connected sequential wireframe steps demonstrating the friction-free Fuel&amp;Go journey from map discovery to digital invoicing.
         </p>
 
+        <!-- MVP User Flow Wireframe Showcase -->
+        <div class="mvp-flow-wrapper">
+          <div class="mvp-flow-header">
+            <div class="mvp-flow-title">
+              <span>📱 Complete Fuel&amp;Go Mobile User Flow Wireframes (Sequential Process)</span>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <span class="version-indicator" style="color: var(--green-energy); border-color: var(--border-green);">Wireframe Fidelity: High</span>
+              <a href="assets/mvp-user-flow.svg" target="_blank" class="jump-btn" style="text-decoration: none; padding: 3px 8px; font-size: 0.72rem;">⤢ Open Vector View</a>
+            </div>
+          </div>
+
+          <!-- Embedded Wireframe Process Graphic -->
+          <div class="mvp-flow-svg-box">
+            <img src="assets/mvp-user-flow.svg" alt="Fuel&amp;Go Sequential MVP User Flow Wireframes (01. Discover, 02. Bay Select, 03. Energize, 04. Tax Invoice)" class="mvp-flow-svg-img">
+          </div>
+
+          <!-- 4-Step Process Explanation Grid -->
+          <div class="flow-steps-grid">
+            <div class="flow-step-card" style="border-top: 2px solid var(--blue-primary);">
+              <div class="flow-step-num" style="color: var(--blue-primary);">STAGE 01</div>
+              <div class="flow-step-name">Smart Discovery</div>
+              <div class="flow-step-desc">
+                Unified map visualizes both petrol pumps &amp; EV fast chargers with real-time socket availability, distance ETA, and energy grade filters.
+              </div>
+            </div>
+
+            <div class="flow-step-card" style="border-top: 2px solid var(--green-energy);">
+              <div class="flow-step-num" style="color: var(--green-energy);">STAGE 02</div>
+              <div class="flow-step-name">Geofence Bay Select</div>
+              <div class="flow-step-desc">
+                Automatic GPS geofence handshake upon arrival. Driver chooses Pump #2 (95 Octane) or Fast Bay #2 (CCS 150kW) with live pricing.
+              </div>
+            </div>
+
+            <div class="flow-step-card" style="border-top: 2px solid var(--blue-primary);">
+              <div class="flow-step-num" style="color: var(--blue-primary);">STAGE 03</div>
+              <div class="flow-step-name">Live Energizing</div>
+              <div class="flow-step-desc">
+                Remote in-app authorization starts dispenser flow or high-voltage charging. Live progress bar, kWh/Liters counter, and safety telemetry.
+              </div>
+            </div>
+
+            <div class="flow-step-card" style="border-top: 2px solid var(--orange-accent);">
+              <div class="flow-step-num" style="color: var(--orange-accent);">STAGE 04</div>
+              <div class="flow-step-name">Auto-Pay &amp; VAT Invoice</div>
+              <div class="flow-step-desc">
+                Zero-touch completion via Apple/Google Pay or corporate fleet card. Instant bilingual PDF receipt with itemized 17% VAT (<span class="hebrew-text">כולל מע"מ</span>).
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Capability Matrix (In-Scope MVP vs Production Roadmap) -->
         <div class="grid-2">
-          <div class="card accent-blue">
-            <h3 class="card-title" style="color: var(--blue-primary);">✅ In-Scope MVP (Presented Prototype)</h3>
-            <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.85rem; margin-top: 1rem; font-size: 0.9rem; color: var(--text-muted);">
-              <li>🔹 <strong>Unified Discovery Engine:</strong> Station network filterable by energy grade, plug type &amp; amenities.</li>
-              <li>🔹 <strong>Dual Interactive Flows:</strong> Fueling vs. EV charging interactive execution simulator.</li>
+          <div class="card accent-blue" style="padding: 1.25rem;">
+            <h3 class="card-title" style="color: var(--blue-primary); font-size: 1.05rem;">✅ In-Scope MVP (Presented Prototype)</h3>
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.6rem; margin-top: 0.6rem; font-size: 0.84rem; color: var(--text-muted);">
+              <li>🔹 <strong>Unified Discovery Engine:</strong> Dual energy station network with real-time socket availability.</li>
+              <li>🔹 <strong>Dual Interactive Flows:</strong> Fueling vs. EV charging interactive execution simulation.</li>
               <li>🔹 <strong>Python-Powered Calculation Engine:</strong> Real-time financial estimator with BiDi Israeli Shekel (<span class="currency-tag">₪</span>) support.</li>
-              <li>🔹 <strong>Three.js 3D Visualizer:</strong> Stylized vehicle &amp; station workflow spatial animation.</li>
+              <li>🔹 <strong>Three.js 3D Visualizer:</strong> Interactive vehicle and charging bay spatial animation.</li>
               <li>🔹 <strong>Bilingual Digital Tax Receipt:</strong> Compliant VAT breakdown in Hebrew (<span class="hebrew-text">כולל מע"מ</span>) and English.</li>
             </ul>
           </div>
 
-          <div class="card accent-green">
-            <h3 class="card-title" style="color: var(--green-energy);">🔮 Production Roadmap (Post-MVP)</h3>
-            <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.85rem; margin-top: 1rem; font-size: 0.9rem; color: var(--text-muted);">
+          <div class="card accent-green" style="padding: 1.25rem;">
+            <h3 class="card-title" style="color: var(--green-energy); font-size: 1.05rem;">🔮 Production Roadmap (Post-MVP)</h3>
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.6rem; margin-top: 0.6rem; font-size: 0.84rem; color: var(--text-muted);">
               <li>🔸 <strong>Native IoT Pump Hardware API:</strong> Hardware handshake via OCPP 2.0.1 and IFSF industrial protocols.</li>
               <li>🔸 <strong>Smart AI Route Optimization:</strong> Multi-stop EV charging route planner factoring elevation, temperature &amp; traffic.</li>
-              <li>🔸 <strong>Fleet ERP Integration:</strong> Direct sync with SAP, Priority, and corporate expense management systems.</li>
+              <li>🔸 <strong>Fleet ERP Integration:</strong> Direct sync with SAP, Priority, and corporate expense systems.</li>
               <li>🔸 <strong>C-Store Click &amp; Collect:</strong> Order coffee and convenience store snacks while charging.</li>
               <li>🔸 <strong>Predictive Dynamic Surge Pricing:</strong> Dynamic tariff recommendations based on grid demand.</li>
             </ul>
@@ -1182,17 +1364,17 @@
 
             <div>
               <label class="input-label" for="sim-station">Select Station Hub</label>
-              <select id="sim-station" style="width: 100%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 10px; border-radius: 10px; font-size: 0.9rem; outline: none;">
-                <option value="hub-central">Fuel&amp;Go Hub — Central Tel Aviv</option>
-                <option value="hub-hightech">Fuel&amp;Go Hub — Herzliya Pituach</option>
-                <option value="hub-highway">Fuel&amp;Go Hub — Highway 6 North</option>
+              <select id="sim-station" class="station-dropdown">
+                <option value="hub-central" style="background-color: #070e1b; color: #ff8c38; font-weight: 700;">Fuel&amp;Go Hub — Central Tel Aviv</option>
+                <option value="hub-hightech" style="background-color: #070e1b; color: #ff8c38; font-weight: 700;">Fuel&amp;Go Hub — Herzliya Pituach</option>
+                <option value="hub-highway" style="background-color: #070e1b; color: #ff8c38; font-weight: 700;">Fuel&amp;Go Hub — Highway 6 North</option>
               </select>
             </div>
 
             <div>
               <label class="input-label" for="sim-bay">Select Bay / Socket</label>
-              <select id="sim-bay" style="width: 100%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 10px; border-radius: 10px; font-size: 0.9rem; outline: none;">
-                <!-- Dynamically populated -->
+              <select id="sim-bay" class="station-dropdown">
+                <!-- Dynamically populated with Orange option styling -->
               </select>
             </div>
 
@@ -1482,8 +1664,9 @@
             <h3 class="card-title" style="color: var(--green-energy);">Development Progression Log</h3>
             <p class="card-desc">
               • <strong>v1_initial.html:</strong> Core 10-slide outline, design system &amp; flow simulation.<br>
-              • <strong>v2_calculator.html (Current):</strong> Python WASM computational engine, Three.js 3D spatial workflow, triad color theme (Blue/Green/Orange), team names &amp; logo branding.<br>
-              • <strong>v3_3d_final.html:</strong> Final polished release ready for external distribution.
+              • <strong>v2_calculator.html:</strong> Python WASM computational engine, Three.js 3D spatial workflow, triad color theme (Blue/Green/Orange), team names &amp; logo branding.<br>
+              • <strong>v3_refinement.html (Current):</strong> High-visibility orange dropdown option text fix, 4-stage sequential MVP User Flow wireframes.<br>
+              • <strong>v4_final.html:</strong> Comprehensive final distribution bundle.
             </p>
           </div>
         </div>
@@ -1505,7 +1688,7 @@
 
           <div>
             <div style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-dim);">Git Repository</div>
-            <div style="font-weight: 700; color: var(--green-energy);">GitHub Synced (v2 Milestone)</div>
+            <div style="font-weight: 700; color: var(--green-energy);">GitHub Synced (v3 Milestone)</div>
           </div>
         </div>
       </section>
@@ -1799,6 +1982,9 @@ def py_calculate_ev(capacity, current_soc, target_soc, ev_tariff, fuel_benchmark
         const option = document.createElement('option');
         option.value = opt.id;
         option.textContent = opt.name;
+        option.style.backgroundColor = '#070e1b';
+        option.style.color = '#ff8c38';
+        option.style.fontWeight = '700';
         baySelect.appendChild(option);
       });
 
