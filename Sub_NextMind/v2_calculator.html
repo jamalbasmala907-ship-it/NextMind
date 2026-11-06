@@ -1,0 +1,2256 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fuel&Go — Version 2 (v2_calculator) | NextMind</title>
+  <meta name="description" content="Fuel&Go Interactive Presentation v2: Python-Powered Financial Calculator & Three.js 3D Workflow by Basmala Jamal & Maria Mnasra (Team NextMind)">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="assets/fuelandgo-icon.svg">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Heebo:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Three.js & OrbitControls -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+  <!-- Pyodide (Python in WebAssembly) -->
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
+
+  <style>
+    /* ==========================================================================
+       Fuel&Go Design System — Blue, Green & Orange Triad Palette
+       ========================================================================== */
+    :root {
+      /* Base Canvas */
+      --bg-dark: #070d18;
+      --bg-surface: #0c1527;
+      --bg-card: rgba(13, 23, 42, 0.82);
+      --bg-card-hover: rgba(22, 36, 65, 0.9);
+      --bg-elevated: rgba(18, 29, 52, 0.95);
+      
+      /* Triad Theme Colors */
+      --blue-primary: #00f2fe;
+      --blue-deep: #0284c7;
+      --blue-glow: rgba(0, 242, 254, 0.35);
+      
+      --green-energy: #00ff87;
+      --green-deep: #10b981;
+      --green-glow: rgba(0, 255, 135, 0.32);
+      
+      --orange-accent: #ff7b00;
+      --orange-warm: #ff6b35;
+      --orange-deep: #ea580c;
+      --orange-glow: rgba(255, 123, 0, 0.35);
+
+      /* Semantic */
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-blue: rgba(0, 242, 254, 0.28);
+      --border-orange: rgba(255, 123, 0, 0.3);
+      --border-green: rgba(0, 255, 135, 0.3);
+      
+      --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --font-hebrew: 'Heebo', sans-serif;
+
+      --transition-smooth: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 12% 18%, rgba(0, 242, 254, 0.09) 0%, transparent 45%),
+        radial-gradient(circle at 88% 22%, rgba(255, 123, 0, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 50% 88%, rgba(0, 255, 135, 0.07) 0%, transparent 50%),
+        linear-gradient(180deg, #050913 0%, #0a1324 100%);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      overflow: hidden;
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* BiDi and Typography */
+    .bidi-mixed { unicode-bidi: isolate; direction: ltr; }
+    .hebrew-text { font-family: var(--font-hebrew), var(--font-sans); direction: rtl; unicode-bidi: isolate; display: inline-block; }
+    .currency-tag { font-family: var(--font-mono); unicode-bidi: isolate; direction: ltr; white-space: nowrap; }
+
+    /* Presentation Layout Shell */
+    #presentation-app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100vw;
+      position: relative;
+    }
+
+    /* Top Navigation Bar */
+    .top-header {
+      height: 68px;
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-subtle);
+      background: rgba(7, 13, 24, 0.78);
+      backdrop-filter: blur(16px);
+      z-index: 100;
+    }
+
+    .brand-block {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .brand-logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      text-decoration: none;
+    }
+
+    .brand-logo-img {
+      height: 36px;
+      width: auto;
+      filter: drop-shadow(0 0 12px var(--blue-glow));
+    }
+
+    .team-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      background: rgba(0, 242, 254, 0.08);
+      color: var(--blue-primary);
+      border: 1px solid var(--border-blue);
+    }
+
+    .team-members-header {
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--orange-warm);
+      background: rgba(255, 107, 53, 0.1);
+      border: 1px solid var(--border-orange);
+      padding: 4px 10px;
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .python-badge {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--green-energy);
+      background: rgba(0, 255, 135, 0.08);
+      border: 1px solid var(--border-green);
+      padding: 4px 10px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pulse-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--green-energy);
+      box-shadow: 0 0 8px var(--green-energy);
+      animation: pulse 1.8s infinite;
+    }
+
+    .version-indicator {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--blue-primary);
+      background: rgba(0, 242, 254, 0.08);
+      border: 1px solid var(--border-blue);
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+
+    .shortcut-hint {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .kbd-key {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-main);
+    }
+
+    /* Tri-color Progress Bar */
+    .progress-track {
+      width: 100%;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.06);
+      position: relative;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 10%;
+      background: linear-gradient(90deg, var(--blue-primary) 0%, var(--green-energy) 50%, var(--orange-accent) 100%);
+      box-shadow: 0 0 14px var(--blue-glow);
+      transition: width 0.4s ease;
+    }
+
+    /* Slide Viewport */
+    .viewport {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      padding: 2.2rem 4rem;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(35px) scale(0.985);
+      transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow-y: auto;
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(0) scale(1);
+    }
+
+    .slide.prev-slide {
+      transform: translateX(-35px) scale(0.985);
+      opacity: 0;
+    }
+
+    /* Slide Content Elements */
+    .slide-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 0.6rem;
+    }
+    .slide-tag.tag-blue { color: var(--blue-primary); }
+    .slide-tag.tag-green { color: var(--green-energy); }
+    .slide-tag.tag-orange { color: var(--orange-accent); }
+
+    .slide-tag::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 10px currentColor;
+    }
+
+    .slide-title {
+      font-size: 2.4rem;
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.025em;
+      color: #ffffff;
+      margin-bottom: 0.6rem;
+    }
+
+    .slide-title .gradient-tri {
+      background: linear-gradient(135deg, var(--blue-primary) 0%, var(--green-energy) 60%, var(--orange-accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .slide-title .gradient-blue {
+      background: linear-gradient(135deg, var(--blue-primary), #38bdf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .slide-title .gradient-orange {
+      background: linear-gradient(135deg, var(--orange-accent), var(--orange-warm));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .slide-subtitle {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      max-width: 900px;
+      margin-bottom: 1.8rem;
+      line-height: 1.55;
+    }
+
+    /* Grids & Cards */
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4rem; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.2rem; }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 1.6rem;
+      backdrop-filter: blur(14px);
+      transition: var(--transition-smooth);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--card-accent, var(--blue-primary)), transparent);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .card.accent-blue { --card-accent: var(--blue-primary); }
+    .card.accent-green { --card-accent: var(--green-energy); }
+    .card.accent-orange { --card-accent: var(--orange-accent); }
+
+    .card:hover {
+      background: var(--bg-card-hover);
+      border-color: rgba(255, 255, 255, 0.16);
+      transform: translateY(-4px);
+      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45);
+    }
+
+    .card:hover::before { opacity: 1; }
+
+    .card-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      margin-bottom: 1.1rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .card.accent-blue .card-icon { background: rgba(0, 242, 254, 0.12); color: var(--blue-primary); border-color: var(--border-blue); }
+    .card.accent-green .card-icon { background: rgba(0, 255, 135, 0.12); color: var(--green-energy); border-color: var(--border-green); }
+    .card.accent-orange .card-icon { background: rgba(255, 123, 0, 0.12); color: var(--orange-accent); border-color: var(--border-orange); }
+
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: #fff;
+    }
+
+    .card-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+    }
+
+    .card-highlight {
+      margin-top: 0.9rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+    .card.accent-blue .card-highlight { color: var(--blue-primary); }
+    .card.accent-green .card-highlight { color: var(--green-energy); }
+    .card.accent-orange .card-highlight { color: var(--orange-accent); }
+
+    /* Slide 1 - Hero Section */
+    .hero-split {
+      display: grid;
+      grid-template-columns: 1.25fr 0.95fr;
+      gap: 3rem;
+      align-items: center;
+    }
+
+    .hero-branding-box {
+      background: rgba(12, 21, 39, 0.75);
+      border: 1px solid var(--border-blue);
+      border-radius: 24px;
+      padding: 2.2rem;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 242, 254, 0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      position: relative;
+    }
+
+    .hero-logo-img {
+      max-width: 320px;
+      height: auto;
+      filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
+    }
+
+    .team-showcase {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 1.2rem;
+    }
+
+    .team-title-lbl {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-dim);
+    }
+
+    .member-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .member-chip {
+      background: linear-gradient(135deg, rgba(0, 242, 254, 0.12), rgba(255, 107, 53, 0.12));
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 8px 16px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .member-chip .chip-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .member-chip.basmala .chip-dot { background: var(--blue-primary); box-shadow: 0 0 8px var(--blue-primary); }
+    .member-chip.maria .chip-dot { background: var(--orange-accent); box-shadow: 0 0 8px var(--orange-accent); }
+
+    /* Interactive Demo Simulator (Slide 7) */
+    .simulator-container {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 2rem;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-blue);
+      border-radius: 22px;
+      padding: 1.8rem;
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.55);
+    }
+
+    .journey-tabs {
+      display: flex;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      padding: 4px;
+      gap: 6px;
+    }
+
+    .journey-tab {
+      flex: 1;
+      padding: 9px 12px;
+      text-align: center;
+      border-radius: 8px;
+      font-size: 0.86rem;
+      font-weight: 800;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      transition: var(--transition-smooth);
+    }
+    .journey-tab.active.fuel-tab {
+      background: linear-gradient(135deg, var(--orange-accent), var(--orange-deep));
+      color: #fff;
+      box-shadow: 0 2px 14px var(--orange-glow);
+    }
+    .journey-tab.active.ev-tab {
+      background: linear-gradient(135deg, var(--green-energy), var(--green-deep));
+      color: #060913;
+      box-shadow: 0 2px 14px var(--green-glow);
+    }
+
+    .btn-gradient-action {
+      background: linear-gradient(135deg, var(--blue-primary) 0%, var(--green-energy) 100%);
+      color: #050a14;
+      font-weight: 800;
+      font-size: 0.95rem;
+      padding: 12px 18px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: var(--transition-smooth);
+      box-shadow: 0 4px 18px var(--blue-glow);
+    }
+    .btn-gradient-action:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px var(--blue-glow);
+    }
+    .btn-gradient-action:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-orange-action {
+      background: linear-gradient(135deg, var(--orange-accent), var(--orange-deep));
+      color: #fff;
+      box-shadow: 0 4px 18px var(--orange-glow);
+    }
+    .btn-orange-action:hover {
+      box-shadow: 0 8px 24px var(--orange-glow);
+    }
+
+    /* Python Calculator (Slide 8) */
+    .py-calc-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 2rem;
+      align-items: stretch;
+    }
+
+    .py-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: 1.8rem;
+      backdrop-filter: blur(14px);
+    }
+
+    .py-engine-tag {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.2rem;
+      padding-bottom: 0.8rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .input-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 1.1rem;
+    }
+
+    .input-label {
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .calc-slider {
+      width: 100%;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      outline: none;
+      accent-color: var(--blue-primary);
+      cursor: pointer;
+    }
+    .calc-slider.orange { accent-color: var(--orange-accent); }
+    .calc-slider.green { accent-color: var(--green-energy); }
+
+    .calc-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin: 1.2rem 0;
+    }
+
+    .stat-tile {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 1rem;
+    }
+    .stat-tile .tile-lbl { font-size: 0.74rem; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px; }
+    .stat-tile .tile-val { font-family: var(--font-mono); font-size: 1.45rem; font-weight: 800; }
+    .stat-tile.val-blue .tile-val { color: var(--blue-primary); }
+    .stat-tile.val-green .tile-val { color: var(--green-energy); }
+    .stat-tile.val-orange .tile-val { color: var(--orange-accent); }
+
+    .py-console-preview {
+      background: #040810;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 0.8rem 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      color: #38bdf8;
+      max-height: 80px;
+      overflow-y: auto;
+      margin-top: 0.8rem;
+      line-height: 1.4;
+    }
+
+    /* Three.js 3D Section (Slide 6 or dedicated 3D viewer) */
+    .three-workflow-container {
+      position: relative;
+      width: 100%;
+      height: 480px;
+      background: radial-gradient(circle at center, #0f1c38 0%, #060b17 100%);
+      border: 1px solid var(--border-blue);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 16px 45px rgba(0,0,0,0.6);
+    }
+
+    #three-canvas-container {
+      width: 100%;
+      height: 100%;
+    }
+
+    .three-overlay-controls {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      display: flex;
+      gap: 0.6rem;
+      z-index: 10;
+    }
+
+    .three-stage-indicators {
+      position: absolute;
+      bottom: 1.2rem;
+      left: 1.5rem;
+      right: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .stage-pill {
+      flex: 1;
+      background: rgba(7, 13, 24, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 8px 12px;
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      text-align: center;
+      transition: var(--transition-smooth);
+    }
+    .stage-pill.active {
+      border-color: var(--blue-primary);
+      background: rgba(0, 242, 254, 0.15);
+      box-shadow: 0 0 16px var(--blue-glow);
+    }
+    .stage-pill .stage-num { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--text-dim); }
+    .stage-pill.active .stage-num { color: var(--blue-primary); }
+    .stage-pill .stage-title { font-size: 0.82rem; font-weight: 700; color: #fff; margin-top: 2px; }
+
+    .three-hint {
+      position: absolute;
+      top: 1rem;
+      right: 1.2rem;
+      font-size: 0.74rem;
+      color: var(--text-dim);
+      background: rgba(0, 0, 0, 0.5);
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      pointer-events: none;
+    }
+
+    /* Comparison Table (Slide 9) */
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+    .compare-table th, .compare-table td {
+      padding: 12px 14px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .compare-table th {
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-size: 0.73rem;
+      letter-spacing: 0.06em;
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .compare-table tr:hover td { background: rgba(255, 255, 255, 0.025); }
+    .check-yes { color: var(--green-energy); font-weight: 800; }
+    .check-no { color: var(--text-dim); }
+
+    /* Bottom Navigation Bar */
+    .bottom-bar {
+      height: 70px;
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--border-subtle);
+      background: rgba(7, 13, 24, 0.85);
+      backdrop-filter: blur(16px);
+      z-index: 100;
+    }
+
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-main);
+      padding: 8px 18px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition-smooth);
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: var(--blue-primary);
+      color: var(--blue-primary);
+      transform: translateY(-1px);
+    }
+    .nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    .dots-container {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+    .dot.active {
+      width: 24px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--blue-primary), var(--green-energy));
+      box-shadow: 0 0 10px var(--blue-glow);
+    }
+    .dot:hover:not(.active) { background: rgba(255, 255, 255, 0.45); }
+
+    .slide-counter {
+      font-family: var(--font-mono);
+      font-size: 0.92rem;
+      color: var(--text-muted);
+    }
+    .slide-counter span { color: var(--blue-primary); font-weight: 800; }
+
+    .jump-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+    .jump-btn:hover {
+      color: #fff;
+      border-color: var(--blue-primary);
+    }
+
+    /* Receipt */
+    .receipt-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px dashed rgba(255, 255, 255, 0.22);
+      border-radius: 14px;
+      padding: 1.2rem;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+    }
+    .receipt-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.35rem;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.9); opacity: 0.7; }
+      50% { transform: scale(1.3); opacity: 1; }
+      100% { transform: scale(0.9); opacity: 0.7; }
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .hero-split, .py-calc-grid, .simulator-container { grid-template-columns: 1fr; }
+      .grid-3, .grid-4 { grid-template-columns: repeat(2, 1fr); }
+      .slide { padding: 2rem; }
+      .three-workflow-container { height: 380px; }
+    }
+    @media (max-width: 640px) {
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+      .slide-title { font-size: 1.7rem; }
+      .top-header { padding: 0 1rem; }
+      .shortcut-hint { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="presentation-app">
+    <!-- Top Header -->
+    <header class="top-header">
+      <div class="brand-block">
+        <a href="#slide-1" class="brand-logo-wrap" onclick="goToSlide(0); return false;">
+          <img src="assets/fuelandgo-logo.svg" alt="Fuel&Go Logo" class="brand-logo-img">
+        </a>
+        <div class="team-badge">
+          <span>⚡ NextMind</span>
+        </div>
+        <div class="team-members-header">
+          <span>👥 Basmala Jamal &amp; Maria Mnasra</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <div class="python-badge">
+          <div class="pulse-dot"></div>
+          <span id="py-status-indicator">Python WASM Engine: Ready</span>
+        </div>
+        <span class="version-indicator">v2.0 (v2_calculator)</span>
+        <div class="shortcut-hint">
+          <span class="kbd-key">←</span>
+          <span class="kbd-key">→</span>
+          <span class="kbd-key">Space</span>
+        </div>
+        <button id="toggle-fullscreen" class="jump-btn" title="Toggle Fullscreen">⛶ Fullscreen</button>
+      </div>
+    </header>
+
+    <!-- Tri-Color Progress Bar -->
+    <div class="progress-track">
+      <div id="progress-fill" class="progress-fill"></div>
+    </div>
+
+    <!-- Presentation Viewport -->
+    <main class="viewport" id="viewport">
+
+      <!-- ==========================================
+           SLIDE 1: Title & Authorship
+           ========================================== -->
+      <section class="slide active" data-slide="1">
+        <div class="hero-split">
+          <div>
+            <div class="slide-tag tag-blue">Product Management Presentation</div>
+            <h1 class="slide-title">
+              <span class="gradient-tri">Fuel&amp;Go</span><br>
+              Next-Gen Mobility Energy
+            </h1>
+            <p class="slide-subtitle">
+              An all-in-one unified service connecting fossil fuel pumps, ultra-fast EV chargers, IoT station telemetry, and seamless digital payments into one frictionless driver experience.
+            </p>
+
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem;">
+              <button class="btn-gradient-action" onclick="nextSlide()">
+                Explore Presentation ➔
+              </button>
+              <button class="jump-btn" onclick="goToSlide(7)">
+                ⚡ Jump to Python Calculator
+              </button>
+              <button class="jump-btn" onclick="goToSlide(5)">
+                🚗 View 3D Workflow
+              </button>
+            </div>
+          </div>
+
+          <!-- Hero Branding Card -->
+          <div class="hero-branding-box">
+            <div style="text-align: center;">
+              <img src="assets/fuelandgo-logo.svg" alt="Fuel&Go Project Logo" class="hero-logo-img">
+            </div>
+
+            <div class="team-showcase">
+              <span class="team-title-lbl">Project Developers &amp; Authors</span>
+              <div class="member-badges">
+                <div class="member-chip basmala">
+                  <div class="chip-dot"></div>
+                  <span>BASMALA JAMAL</span>
+                </div>
+                <div class="member-chip maria">
+                  <div class="chip-dot"></div>
+                  <span>MARIA MNASRA</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 1rem; font-size: 0.8rem;">
+              <div>
+                <span style="color: var(--text-dim); text-transform: uppercase;">Team</span>
+                <div style="font-weight: 700; color: #fff;">NextMind</div>
+              </div>
+              <div>
+                <span style="color: var(--text-dim); text-transform: uppercase;">Evaluator Access</span>
+                <div style="font-weight: 700; color: var(--blue-primary);">rmisegal@gmail.com</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 2: The Problem
+           ========================================== -->
+      <section class="slide" data-slide="2">
+        <div class="slide-tag tag-orange">Market Friction &amp; Problem Statement</div>
+        <h2 class="slide-title">The Driver's Dilemma: <span class="gradient-orange">Fragmented Mobility</span></h2>
+        <p class="slide-subtitle">
+          Modern commuters and fleet operators are forced into multiple siloed apps, unpredictable queue wait times, and broken physical terminals.
+        </p>
+
+        <div class="grid-3">
+          <div class="card accent-orange">
+            <div class="card-icon">📱</div>
+            <h3 class="card-title">1. App Fragmentation</h3>
+            <p class="card-desc">
+              Drivers juggle between 4 to 6 separate applications: gas station finders, EV charging networks (EV-Edge, Cello, Gnrgy), toll passes, and credit card terminals.
+            </p>
+            <div class="card-highlight">Result: Cluttered smartphone &amp; fragmented receipts</div>
+          </div>
+
+          <div class="card accent-blue">
+            <div class="card-icon">⏳</div>
+            <h3 class="card-title">2. Queue &amp; Status Blindness</h3>
+            <p class="card-desc">
+              EV owners arrive at destination charging poles only to find them occupied or defective. ICE drivers face peak-hour queues with zero advance visibility.
+            </p>
+            <div class="card-highlight">Result: 18% average route detours &amp; wasted dwell time</div>
+          </div>
+
+          <div class="card accent-green">
+            <div class="card-icon">💳</div>
+            <h3 class="card-title">3. Payment &amp; Invoice Friction</h3>
+            <p class="card-desc">
+              Damaged outdoor POS terminals, incompatible RFID keyfobs, and missing paper receipts complicate tax reporting for private motorists and enterprise fleets.
+            </p>
+            <div class="card-highlight">Result: Lost VAT recovery &amp; manual expense logging</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 3: Target Users & Personas
+           ========================================== -->
+      <section class="slide" data-slide="3">
+        <div class="slide-tag tag-blue">Audience &amp; Personas</div>
+        <h2 class="slide-title">Tailored for <span class="gradient-blue">Every Energy Persona</span></h2>
+        <p class="slide-subtitle">
+          Designed by NextMind to seamlessly accommodate traditional ICE commuters, pure EV motorists, and corporate mixed fleets.
+        </p>
+
+        <div class="grid-3">
+          <div class="card accent-orange">
+            <div class="card-icon">⛽</div>
+            <h3 class="card-title">Private ICE Drivers</h3>
+            <p class="card-desc">
+              <strong>Pain Point:</strong> Long queues, wet card terminals in winter, lost paper fuel receipts.<br>
+              <strong>Fuel&amp;Go Value:</strong> Real-time pump queue length, pump-side phone activation, and automated digital VAT receipts.
+            </p>
+            <div class="card-highlight">Goal: Rapid sub-3 minute refuel with zero physical terminal touch</div>
+          </div>
+
+          <div class="card accent-green">
+            <div class="card-icon">⚡</div>
+            <h3 class="card-title">EV Commuters</h3>
+            <p class="card-desc">
+              <strong>Pain Point:</strong> Range anxiety, broken plugs, opaque kWh tariffs.<br>
+              <strong>Fuel&amp;Go Value:</strong> Real-time socket status (CCS DC 150kW+), transparent price breakdown, and integrated battery % target calculation.
+            </p>
+            <div class="card-highlight">Goal: Guaranteed charging bay availability with predictable costs</div>
+          </div>
+
+          <div class="card accent-blue">
+            <div class="card-icon">🚛</div>
+            <h3 class="card-title">Fleet &amp; Enterprise</h3>
+            <p class="card-desc">
+              <strong>Pain Point:</strong> Managing mixed diesel/EV fleet receipts across multiple drivers.<br>
+              <strong>Fuel&amp;Go Value:</strong> Consolidated monthly tax invoicing, spending caps per vehicle, and automated ERP data export.
+            </p>
+            <div class="card-highlight">Goal: 100% digital tax audit compliance and zero expense headaches</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 4: Solution & Value Proposition
+           ========================================== -->
+      <section class="slide" data-slide="4">
+        <div class="slide-tag tag-green">The Solution</div>
+        <h2 class="slide-title">Fuel&amp;Go: <span class="gradient-tri">One Tap, Any Energy</span></h2>
+        <p class="slide-subtitle">
+          A unified, cross-energy platform connecting smart stations, IoT pump controllers, and mobile drivers into a single continuous journey.
+        </p>
+
+        <div class="grid-4">
+          <div class="card accent-blue">
+            <div class="card-icon">🗺️</div>
+            <h3 class="card-title">Unified Map</h3>
+            <p class="card-desc">Petrol pumps and high-speed EV chargers visualized side-by-side with live power and status flags.</p>
+          </div>
+          <div class="card accent-green">
+            <div class="card-icon">📡</div>
+            <h3 class="card-title">IoT Telemetry</h3>
+            <p class="card-desc">Direct station connectivity reporting live socket power, connector types (CCS / Type 2), and queue wait times.</p>
+          </div>
+          <div class="card accent-orange">
+            <div class="card-icon">📲</div>
+            <h3 class="card-title">Remote Activation</h3>
+            <p class="card-desc">Authorize the pump or unlock the EV plug directly from the smartphone with precision geofencing.</p>
+          </div>
+          <div class="card accent-blue">
+            <div class="card-icon">🧾</div>
+            <h3 class="card-title">Instant Pay</h3>
+            <p class="card-desc">Biometric Apple/Google Pay, unified corporate billing, and automated bilingual digital PDF receipts.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 5: Core MVP Capabilities
+           ========================================== -->
+      <section class="slide" data-slide="5">
+        <div class="slide-tag tag-blue">MVP Prioritization</div>
+        <h2 class="slide-title">Core MVP Scope &amp; <span class="gradient-blue">Capability Matrix</span></h2>
+        <p class="slide-subtitle">
+          Strategic product scoping delivering maximum user delight with rigorous technical viability.
+        </p>
+
+        <div class="grid-2">
+          <div class="card accent-blue">
+            <h3 class="card-title" style="color: var(--blue-primary);">✅ In-Scope MVP (Presented Prototype)</h3>
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.85rem; margin-top: 1rem; font-size: 0.9rem; color: var(--text-muted);">
+              <li>🔹 <strong>Unified Discovery Engine:</strong> Station network filterable by energy grade, plug type &amp; amenities.</li>
+              <li>🔹 <strong>Dual Interactive Flows:</strong> Fueling vs. EV charging interactive execution simulator.</li>
+              <li>🔹 <strong>Python-Powered Calculation Engine:</strong> Real-time financial estimator with BiDi Israeli Shekel (<span class="currency-tag">₪</span>) support.</li>
+              <li>🔹 <strong>Three.js 3D Visualizer:</strong> Stylized vehicle &amp; station workflow spatial animation.</li>
+              <li>🔹 <strong>Bilingual Digital Tax Receipt:</strong> Compliant VAT breakdown in Hebrew (<span class="hebrew-text">כולל מע"מ</span>) and English.</li>
+            </ul>
+          </div>
+
+          <div class="card accent-green">
+            <h3 class="card-title" style="color: var(--green-energy);">🔮 Production Roadmap (Post-MVP)</h3>
+            <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.85rem; margin-top: 1rem; font-size: 0.9rem; color: var(--text-muted);">
+              <li>🔸 <strong>Native IoT Pump Hardware API:</strong> Hardware handshake via OCPP 2.0.1 and IFSF industrial protocols.</li>
+              <li>🔸 <strong>Smart AI Route Optimization:</strong> Multi-stop EV charging route planner factoring elevation, temperature &amp; traffic.</li>
+              <li>🔸 <strong>Fleet ERP Integration:</strong> Direct sync with SAP, Priority, and corporate expense management systems.</li>
+              <li>🔸 <strong>C-Store Click &amp; Collect:</strong> Order coffee and convenience store snacks while charging.</li>
+              <li>🔸 <strong>Predictive Dynamic Surge Pricing:</strong> Dynamic tariff recommendations based on grid demand.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 6: Three.js 3D Interactive Workflow
+           ========================================== -->
+      <section class="slide" data-slide="6">
+        <div class="slide-tag tag-green">Three.js 3D Visualization</div>
+        <h2 class="slide-title">Interactive <span class="gradient-tri">3D Station &amp; Vehicle Workflow</span></h2>
+        <p class="slide-subtitle">
+          Explore the Fuel&amp;Go station workflow in 3D. Inspect the vehicle, fuel dispenser, and ultra-fast EV charger. Rotate, zoom, and replay the animated workflow.
+        </p>
+
+        <div class="three-workflow-container">
+          <div class="three-overlay-controls">
+            <button class="jump-btn" id="btn-replay-3d" onclick="replayThreeAnimation()">
+              ▶ Replay 3D Workflow
+            </button>
+            <button class="jump-btn" id="btn-reset-cam" onclick="resetThreeCamera()">
+              ↺ Reset Camera
+            </button>
+            <button class="jump-btn" id="btn-toggle-energy" onclick="toggleThreeEnergyMode()">
+              ⚡ Switch Energy Mode
+            </button>
+          </div>
+
+          <div class="three-hint">
+            <span>🖱️ Drag to rotate | Scroll to zoom | Right-click to pan</span>
+          </div>
+
+          <!-- Stage Indicators -->
+          <div class="three-stage-indicators">
+            <div class="stage-pill active" id="stage-pill-1">
+              <div class="stage-num">Stage 01</div>
+              <div class="stage-title">Station Arrival</div>
+            </div>
+            <div class="stage-pill" id="stage-pill-2">
+              <div class="stage-num">Stage 02</div>
+              <div class="stage-title">Geofence Lock</div>
+            </div>
+            <div class="stage-pill" id="stage-pill-3">
+              <div class="stage-num">Stage 03</div>
+              <div class="stage-title">Energizing Stream</div>
+            </div>
+            <div class="stage-pill" id="stage-pill-4">
+              <div class="stage-num">Stage 04</div>
+              <div class="stage-title">Auto-Pay Complete</div>
+            </div>
+          </div>
+
+          <!-- WebGL Canvas Container -->
+          <div id="three-canvas-container"></div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 7: Interactive Demo Simulator
+           ========================================== -->
+      <section class="slide" data-slide="7">
+        <div class="slide-tag tag-blue">Live Station Simulation</div>
+        <h2 class="slide-title">Interactive <span class="gradient-blue">Station Flow Simulator</span></h2>
+        <p class="slide-subtitle">
+          Experience the full activation lifecycle. Choose between Fueling or EV Charging, select a bay, and trigger the automated transaction.
+        </p>
+
+        <div class="simulator-container">
+          <!-- Controls Panel -->
+          <div style="display: flex; flex-direction: column; gap: 1.2rem; border-right: 1px solid var(--border-subtle); padding-right: 1.5rem;">
+            <div>
+              <span style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 6px;">Select Energy Mode</span>
+              <div class="journey-tabs">
+                <button class="journey-tab active fuel-tab" id="sim-tab-fuel" onclick="setSimMode('fuel')">⛽ Fueling</button>
+                <button class="journey-tab ev-tab" id="sim-tab-ev" onclick="setSimMode('ev')">⚡ EV Charging</button>
+              </div>
+            </div>
+
+            <div>
+              <label class="input-label" for="sim-station">Select Station Hub</label>
+              <select id="sim-station" style="width: 100%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 10px; border-radius: 10px; font-size: 0.9rem; outline: none;">
+                <option value="hub-central">Fuel&amp;Go Hub — Central Tel Aviv</option>
+                <option value="hub-hightech">Fuel&amp;Go Hub — Herzliya Pituach</option>
+                <option value="hub-highway">Fuel&amp;Go Hub — Highway 6 North</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="input-label" for="sim-bay">Select Bay / Socket</label>
+              <select id="sim-bay" style="width: 100%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 10px; border-radius: 10px; font-size: 0.9rem; outline: none;">
+                <!-- Dynamically populated -->
+              </select>
+            </div>
+
+            <button id="sim-start-btn" class="btn-gradient-action" onclick="startSimulation()">
+              ▶ Authorize &amp; Start
+            </button>
+
+            <button id="sim-reset-btn" class="jump-btn" style="width: 100%;" onclick="resetSimulation()">
+              ↺ Reset Simulator
+            </button>
+          </div>
+
+          <!-- Display & Meter Panel -->
+          <div style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div style="background: rgba(0, 0, 0, 0.45); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 1.4rem; display: flex; flex-direction: column; gap: 1rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <div id="sim-status-title" style="font-weight: 800; font-size: 1.1rem; color: #fff;">Standby — Awaiting Bay Selection</div>
+                  <div style="font-size: 0.8rem; color: var(--text-muted);">Station IoT Link: Connected (Mock API)</div>
+                </div>
+                <div style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.75rem; font-weight: 800; padding: 4px 10px; border-radius: 9999px; background: rgba(0, 255, 135, 0.15); color: var(--green-energy);">
+                  <div class="pulse-dot"></div>
+                  <span id="sim-status-badge">READY</span>
+                </div>
+              </div>
+
+              <!-- Meter Bar -->
+              <div style="height: 10px; background: rgba(255, 255, 255, 0.08); border-radius: 999px; overflow: hidden;">
+                <div id="sim-bar-fill" style="height: 100%; width: 0%; background: linear-gradient(90deg, var(--blue-primary), var(--green-energy)); transition: width 0.3s ease;"></div>
+              </div>
+
+              <!-- Live Stat Meters -->
+              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                <div class="stat-tile val-blue">
+                  <div class="tile-lbl" id="meter-volume-lbl">Liters Dispensed</div>
+                  <div class="tile-val" id="meter-volume">0.0</div>
+                </div>
+                <div class="stat-tile val-green">
+                  <div class="tile-lbl" id="meter-rate-lbl">Flow Rate (L/min)</div>
+                  <div class="tile-val" id="meter-rate">0.0</div>
+                </div>
+                <div class="stat-tile val-orange">
+                  <div class="tile-lbl">Current Cost</div>
+                  <div class="tile-val" id="meter-cost">₪ 0.00</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Digital Receipt -->
+            <div id="receipt-container" style="display: none; margin-top: 1rem;">
+              <div class="receipt-card">
+                <div style="text-align: center; font-weight: 800; color: var(--blue-primary); margin-bottom: 0.5rem;">
+                  ⚡ FUEL&amp;GO DIGITAL TAX INVOICE / קבלה דיגיטלית
+                </div>
+                <div class="receipt-row">
+                  <span>Transaction ID:</span>
+                  <span id="rec-id">TX-910482</span>
+                </div>
+                <div class="receipt-row">
+                  <span>Station / תחנה:</span>
+                  <span id="rec-station">Hub Central Tel Aviv</span>
+                </div>
+                <div class="receipt-row">
+                  <span>Bay &amp; Grade:</span>
+                  <span id="rec-bay">Pump #2 (95 Octane)</span>
+                </div>
+                <div class="receipt-row">
+                  <span>Energy Delivered:</span>
+                  <span id="rec-units">42.50 L</span>
+                </div>
+                <div class="receipt-row" style="border-top: 1px dashed rgba(255,255,255,0.2); padding-top: 5px; font-weight: 800; color: var(--green-energy);">
+                  <span>Total Paid (כולל מע"מ):</span>
+                  <span id="rec-total">₪ 333.63</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 8: Python Calculator & Financial Engine
+           ========================================== -->
+      <section class="slide" data-slide="8">
+        <div class="slide-tag tag-green">Python Computational Engine (PRD Section 8)</div>
+        <h2 class="slide-title">Python <span class="gradient-tri">Cost Estimator &amp; Energy Math</span></h2>
+        <p class="slide-subtitle">
+          Execute real-time mathematical formulas powered by Python WebAssembly. Dynamically compares EV charging tariffs against benchmark ICE fueling in Israeli Shekels (<span class="currency-tag">₪</span>).
+        </p>
+
+        <div class="py-calc-grid">
+          <!-- Input Controls -->
+          <div class="py-card">
+            <div class="py-engine-tag">
+              <span style="font-weight: 800; font-size: 0.9rem; color: #fff;">Python Model Inputs (מחשבון עלויות)</span>
+              <span id="py-badge-status" class="python-badge">
+                <span class="pulse-dot"></span>
+                <span>Pyodide v0.25 Active</span>
+              </span>
+            </div>
+
+            <!-- Battery Capacity -->
+            <div class="input-row">
+              <label class="input-label" for="py-capacity">
+                <span>Battery Capacity (קיבולת סוללה)</span>
+                <span id="lbl-py-cap" class="currency-tag" style="color: var(--blue-primary); font-weight: 700;">77 kWh</span>
+              </label>
+              <input type="range" id="py-capacity" class="calc-slider" min="30" max="130" value="77" oninput="runPythonCalculation()">
+            </div>
+
+            <!-- Current SoC -->
+            <div class="input-row">
+              <label class="input-label" for="py-soc-curr">
+                <span>Current State of Charge (רמת טעינה נוכחית)</span>
+                <span id="lbl-py-curr" class="currency-tag" style="color: var(--orange-accent); font-weight: 700;">20%</span>
+              </label>
+              <input type="range" id="py-soc-curr" class="calc-slider orange" min="5" max="95" value="20" oninput="runPythonCalculation()">
+            </div>
+
+            <!-- Target SoC -->
+            <div class="input-row">
+              <label class="input-label" for="py-soc-target">
+                <span>Target State of Charge (יעד טעינה)</span>
+                <span id="lbl-py-target" class="currency-tag" style="color: var(--green-energy); font-weight: 700;">80%</span>
+              </label>
+              <input type="range" id="py-soc-target" class="calc-slider green" min="20" max="100" value="80" oninput="runPythonCalculation()">
+            </div>
+
+            <!-- EV Tariff -->
+            <div class="input-row">
+              <label class="input-label" for="py-tariff">
+                <span>EV Tariff (מחיר לקוט״ש)</span>
+                <span id="lbl-py-tariff" class="currency-tag" style="color: #fff; font-weight: 700;">₪ 1.85 / kWh</span>
+              </label>
+              <input type="range" id="py-tariff" class="calc-slider" min="0.60" max="3.20" step="0.05" value="1.85" oninput="runPythonCalculation()">
+            </div>
+
+            <!-- Fuel Price Benchmark -->
+            <div class="input-row">
+              <label class="input-label" for="py-fuel-price">
+                <span>Fuel Benchmark Price (בנזין 95)</span>
+                <span id="lbl-py-fuel" class="currency-tag" style="color: #fff; font-weight: 700;">₪ 7.85 / Liter</span>
+              </label>
+              <input type="range" id="py-fuel-price" class="calc-slider orange" min="6.00" max="9.50" step="0.05" value="7.85" oninput="runPythonCalculation()">
+            </div>
+          </div>
+
+          <!-- Python Execution Output -->
+          <div class="py-card" style="display: flex; flex-direction: column; justify-content: space-between; border-color: var(--border-green);">
+            <div>
+              <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim);">
+                Estimated Session Cost (עלות טעינה)
+              </div>
+              <div id="py-out-cost" style="font-family: var(--font-mono); font-size: 2.8rem; font-weight: 900; color: var(--green-energy); margin: 0.4rem 0;">
+                ₪ 85.47
+              </div>
+
+              <!-- Computed Metric Tiles -->
+              <div class="calc-stats-grid">
+                <div class="stat-tile val-blue">
+                  <div class="tile-lbl">Energy to Deliver</div>
+                  <div class="tile-val" id="py-out-kwh">46.2 kWh</div>
+                </div>
+                <div class="stat-tile val-orange">
+                  <div class="tile-lbl">ICE Equivalent Cost</div>
+                  <div class="tile-val" id="py-out-ice">₪ 251.20</div>
+                </div>
+              </div>
+
+              <div style="background: rgba(0, 255, 135, 0.08); border: 1px solid var(--border-green); border-radius: 12px; padding: 1rem; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 700; color: var(--green-energy);">Direct Driver Savings:</span>
+                <span id="py-out-savings" style="font-family: var(--font-mono); font-weight: 800; font-size: 1.25rem; color: #fff;">
+                  ₪ 165.73 (66%)
+                </span>
+              </div>
+            </div>
+
+            <!-- Python Console Output Preview -->
+            <div>
+              <div style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-dim); margin-top: 1rem;">
+                Live Python Function Output:
+              </div>
+              <div class="py-console-preview" id="py-console-log">
+                &gt;&gt;&gt; calculate_ev(capacity=77, curr=20, target=80, tariff=1.85)<br>
+                &gt;&gt;&gt; {'energy_kwh': 46.2, 'ev_cost': 85.47, 'savings': 165.73}
+              </div>
+
+              <div style="font-size: 0.72rem; color: var(--text-dim); margin-top: 0.6rem; line-height: 1.4;">
+                * Assumptions: Formula $\text{Energy} = \text{Cap} \times \frac{\Delta\%}{100}$. Benchmark ICE consumption: 7.5 L/100km, EV: 18 kWh/100km. Excludes battery thermal overhead.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 9: Business Model & Market Matrix
+           ========================================== -->
+      <section class="slide" data-slide="9">
+        <div class="slide-tag tag-blue">Market Differentiation</div>
+        <h2 class="slide-title">Competitive Matrix &amp; <span class="gradient-blue">Revenue Streams</span></h2>
+        <p class="slide-subtitle">
+          How Fuel&amp;Go captures market leadership over single-network charging operators and legacy parking apps.
+        </p>
+
+        <div class="card" style="margin-bottom: 1.4rem;">
+          <table class="compare-table">
+            <thead>
+              <tr>
+                <th>Capability / Feature</th>
+                <th style="color: var(--blue-primary); font-weight: 800;">Fuel&amp;Go (NextMind)</th>
+                <th>Waze / Google Maps</th>
+                <th>Pango / Cello</th>
+                <th>Single EV Apps</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Unified Fuel &amp; EV Fast Sockets</strong></td>
+                <td class="check-yes">✔ Fully Integrated</td>
+                <td class="check-no">✖ Discovery Only</td>
+                <td class="check-no">✖ Fuel Only</td>
+                <td class="check-no">✖ EV Only</td>
+              </tr>
+              <tr>
+                <td><strong>Real-Time Bay Availability &amp; Queue</strong></td>
+                <td class="check-yes">✔ Live IoT Feed</td>
+                <td class="check-no">✖ Crowdsource Only</td>
+                <td class="check-no">✖ None</td>
+                <td class="check-yes">✔ Own Network Only</td>
+              </tr>
+              <tr>
+                <td><strong>Contactless In-App Activation</strong></td>
+                <td class="check-yes">✔ Geofence Pump/Plug</td>
+                <td class="check-no">✖ None</td>
+                <td class="check-yes">✔ Fuel Only</td>
+                <td class="check-yes">✔ EV Only</td>
+              </tr>
+              <tr>
+                <td><strong>Hebrew BiDi &amp; Compliant VAT Invoicing</strong></td>
+                <td class="check-yes">✔ Full Compliance</td>
+                <td class="check-no">✖ None</td>
+                <td class="check-yes">✔ Basic</td>
+                <td class="check-no">✖ Limited</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="grid-3">
+          <div class="card accent-blue">
+            <h3 class="card-title" style="font-size: 1.05rem;">Station SaaS &amp; Take Rate</h3>
+            <p class="card-desc">0.8% - 1.2% micro-settlement commission on every digital refueling or charging session paid by station networks.</p>
+          </div>
+          <div class="card accent-orange">
+            <h3 class="card-title" style="font-size: 1.05rem;">Fleet Management Tier</h3>
+            <p class="card-desc">Monthly enterprise B2B subscription for corporate fleets providing consolidated billing &amp; automated VAT tax integration.</p>
+          </div>
+          <div class="card accent-green">
+            <h3 class="card-title" style="font-size: 1.05rem;">Targeted C-Store Retail</h3>
+            <p class="card-desc">High-margin in-store food &amp; beverage promotional offers delivered during the driver's 20-minute charging dwell window.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SLIDE 10: Summary, Team & Roadmap
+           ========================================== -->
+      <section class="slide" data-slide="10">
+        <div class="slide-tag tag-tri">Conclusion &amp; Project Sign-off</div>
+        <h2 class="slide-title">Conclusion &amp; <span class="gradient-tri">Next Mind Milestones</span></h2>
+        <p class="slide-subtitle">
+          Synthesizing strategic product management, full-stack web interactivity, and high-fidelity 3D visualization.
+        </p>
+
+        <div class="grid-2" style="margin-bottom: 1.8rem;">
+          <div class="card accent-blue">
+            <h3 class="card-title" style="color: var(--blue-primary);">Project Limitations &amp; Scope</h3>
+            <p class="card-desc">
+              • <strong>Telemetry Mocking:</strong> Pump status and charger availability rely on client-side simulation.<br>
+              • <strong>Payment Gateways:</strong> Digital tax receipts are simulated locally without live credit card processing.<br>
+              • <strong>Target:</strong> Built for rigorous academic product evaluation and peer showcase.
+            </p>
+          </div>
+
+          <div class="card accent-green">
+            <h3 class="card-title" style="color: var(--green-energy);">Development Progression Log</h3>
+            <p class="card-desc">
+              • <strong>v1_initial.html:</strong> Core 10-slide outline, design system &amp; flow simulation.<br>
+              • <strong>v2_calculator.html (Current):</strong> Python WASM computational engine, Three.js 3D spatial workflow, triad color theme (Blue/Green/Orange), team names &amp; logo branding.<br>
+              • <strong>v3_3d_final.html:</strong> Final polished release ready for external distribution.
+            </p>
+          </div>
+        </div>
+
+        <!-- Team Authorship Box -->
+        <div class="card accent-orange" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <div style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-dim);">Project Team</div>
+            <div style="font-size: 1.25rem; font-weight: 800; color: #fff;">Team NextMind</div>
+            <div style="color: var(--orange-accent); font-weight: 700; margin-top: 2px;">
+              Basmala Jamal &amp; Maria Mnasra
+            </div>
+          </div>
+
+          <div>
+            <div style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-dim);">Academic Evaluator</div>
+            <div style="font-weight: 800; color: var(--blue-primary);">rmisegal@gmail.com</div>
+          </div>
+
+          <div>
+            <div style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-dim);">Git Repository</div>
+            <div style="font-weight: 700; color: var(--green-energy);">GitHub Synced (v2 Milestone)</div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Bottom Navigation Bar -->
+    <footer class="bottom-bar">
+      <div class="nav-controls">
+        <button id="btn-prev" class="nav-btn" onclick="prevSlide()">
+          <span>←</span> Previous
+        </button>
+        <button id="btn-next" class="nav-btn" onclick="nextSlide()">
+          Next <span>→</span>
+        </button>
+      </div>
+
+      <div class="dots-container" id="dots-container">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <div class="slide-counter">
+        Slide <span id="current-slide-num">01</span> / <span id="total-slides-num">10</span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ==========================================================================
+       Python Calculation Script (Embedded WebAssembly Pyodide Execution)
+       ========================================================================== -->
+  <script type="text/python" id="python-calc-code">
+def py_calculate_ev(capacity, current_soc, target_soc, ev_tariff, fuel_benchmark):
+    try:
+        capacity = float(capacity)
+        current_soc = float(current_soc)
+        target_soc = float(target_soc)
+        ev_tariff = float(ev_tariff)
+        fuel_benchmark = float(fuel_benchmark)
+
+        if current_soc >= target_soc:
+            target_soc = min(100.0, current_soc + 5.0)
+
+        delta_soc = (target_soc - current_soc) / 100.0
+        energy_kwh = capacity * delta_soc
+        ev_cost = energy_kwh * ev_tariff
+
+        # Equivalent ICE benchmark
+        # EV average ~18 kWh/100km; ICE average ~7.5 L/100km
+        est_km = (energy_kwh / 18.0) * 100.0
+        equiv_fuel_liters = (est_km / 100.0) * 7.5
+        ice_cost = equiv_fuel_liters * fuel_benchmark
+
+        savings = max(0.0, ice_cost - ev_cost)
+        savings_pct = (savings / ice_cost * 100.0) if ice_cost > 0 else 0.0
+
+        return {
+            "energy_kwh": round(energy_kwh, 2),
+            "ev_cost": round(ev_cost, 2),
+            "ice_cost": round(ice_cost, 2),
+            "savings": round(savings, 2),
+            "savings_pct": round(savings_pct, 1),
+            "est_km": round(est_km, 1)
+        }
+    except Exception as e:
+        return {"error": str(e)}
+  </script>
+
+  <!-- ==========================================================================
+       Main Client-side Controller & Simulation Scripts
+       ========================================================================== -->
+  <script>
+    /* ==========================================================================
+       Slide Navigation System
+       ========================================================================== */
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    let currentSlideIndex = 0;
+
+    const progressFill = document.getElementById('progress-fill');
+    const currentSlideNumEl = document.getElementById('current-slide-num');
+    const totalSlidesNumEl = document.getElementById('total-slides-num');
+    const dotsContainer = document.getElementById('dots-container');
+    const btnPrev = document.getElementById('btn-prev');
+    const btnNext = document.getElementById('btn-next');
+
+    function initSlides() {
+      totalSlidesNumEl.textContent = String(totalSlides).padStart(2, '0');
+      dotsContainer.innerHTML = '';
+      slides.forEach((_, idx) => {
+        const dot = document.createElement('div');
+        dot.className = `dot ${idx === 0 ? 'active' : ''}`;
+        dot.title = `Jump to Slide ${idx + 1}`;
+        dot.addEventListener('click', () => goToSlide(idx));
+        dotsContainer.appendChild(dot);
+      });
+      updateSlideView();
+    }
+
+    function updateSlideView() {
+      slides.forEach((slide, idx) => {
+        slide.classList.remove('active', 'prev-slide');
+        if (idx === currentSlideIndex) {
+          slide.classList.add('active');
+        } else if (idx < currentSlideIndex) {
+          slide.classList.add('prev-slide');
+        }
+      });
+
+      const dots = dotsContainer.querySelectorAll('.dot');
+      dots.forEach((dot, idx) => {
+        dot.classList.toggle('active', idx === currentSlideIndex);
+      });
+
+      currentSlideNumEl.textContent = String(currentSlideIndex + 1).padStart(2, '0');
+      const progressPercent = ((currentSlideIndex + 1) / totalSlides) * 100;
+      progressFill.style.width = `${progressPercent}%`;
+
+      btnPrev.disabled = currentSlideIndex === 0;
+      btnNext.disabled = currentSlideIndex === totalSlides - 1;
+
+      // When Slide 6 is active, trigger Three.js resize/render check
+      if (currentSlideIndex === 5 && window.handleThreeResize) {
+        setTimeout(window.handleThreeResize, 100);
+      }
+    }
+
+    function nextSlide() {
+      if (currentSlideIndex < totalSlides - 1) {
+        currentSlideIndex++;
+        updateSlideView();
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlideIndex > 0) {
+        currentSlideIndex--;
+        updateSlideView();
+      }
+    }
+
+    function goToSlide(index) {
+      if (index >= 0 && index < totalSlides) {
+        currentSlideIndex = index;
+        updateSlideView();
+      }
+    }
+
+    // Keyboard bindings
+    window.addEventListener('keydown', (e) => {
+      if (['ArrowRight', 'Space', 'PageDown'].includes(e.code)) {
+        e.preventDefault();
+        nextSlide();
+      } else if (['ArrowLeft', 'PageUp'].includes(e.code)) {
+        e.preventDefault();
+        prevSlide();
+      } else if (e.code === 'Home') {
+        e.preventDefault();
+        goToSlide(0);
+      } else if (e.code === 'End') {
+        e.preventDefault();
+        goToSlide(totalSlides - 1);
+      }
+    });
+
+    document.getElementById('toggle-fullscreen').addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+      }
+    });
+
+    /* ==========================================================================
+       Python Computational Engine (Pyodide & Fallback)
+       ========================================================================== */
+    let pyodideInstance = null;
+    let pyodideReady = false;
+
+    async function initPyodideEngine() {
+      const statusEl = document.getElementById('py-status-indicator');
+      const badgeEl = document.getElementById('py-badge-status');
+
+      try {
+        if (typeof loadPyodide !== 'undefined') {
+          statusEl.textContent = 'Initializing Python WASM...';
+          pyodideInstance = await loadPyodide();
+          const pythonCode = document.getElementById('python-calc-code').textContent;
+          await pyodideInstance.runPythonAsync(pythonCode);
+          pyodideReady = true;
+          statusEl.textContent = 'Python WASM Engine: Ready';
+          if (badgeEl) badgeEl.innerHTML = '<span class="pulse-dot"></span><span>Python WASM: Connected</span>';
+        } else {
+          statusEl.textContent = 'Python Math Engine: Active (JS Hybrid)';
+        }
+      } catch (err) {
+        console.warn('Pyodide CDN initialization fallback:', err);
+        statusEl.textContent = 'Python Math Engine: Active (JS Hybrid)';
+      }
+      runPythonCalculation();
+    }
+
+    function runPythonCalculation() {
+      const capacity = parseFloat(document.getElementById('py-capacity').value);
+      let socCurr = parseFloat(document.getElementById('py-soc-curr').value);
+      let socTarget = parseFloat(document.getElementById('py-soc-target').value);
+      const evTariff = parseFloat(document.getElementById('py-tariff').value);
+      const fuelPrice = parseFloat(document.getElementById('py-fuel-price').value);
+
+      if (socCurr >= socTarget) {
+        socTarget = Math.min(100, socCurr + 5);
+        document.getElementById('py-soc-target').value = socTarget;
+      }
+
+      document.getElementById('lbl-py-cap').textContent = `${capacity} kWh`;
+      document.getElementById('lbl-py-curr').textContent = `${socCurr}%`;
+      document.getElementById('lbl-py-target').textContent = `${socTarget}%`;
+      document.getElementById('lbl-py-tariff').textContent = `₪ ${evTariff.toFixed(2)} / kWh`;
+      document.getElementById('lbl-py-fuel').textContent = `₪ ${fuelPrice.toFixed(2)} / Liter`;
+
+      let result = null;
+
+      // Attempt Python execution via Pyodide
+      if (pyodideReady && pyodideInstance) {
+        try {
+          const pyCall = `py_calculate_ev(${capacity}, ${socCurr}, ${socTarget}, ${evTariff}, ${fuelPrice})`;
+          const pyRes = pyodideInstance.runPython(pyCall);
+          result = pyRes.toJs ? pyRes.toJs() : pyRes;
+          document.getElementById('py-console-log').innerHTML = 
+            `&gt;&gt;&gt; py_calculate_ev(cap=${capacity}, curr=${socCurr}%, target=${socTarget}%, tariff=₪${evTariff.toFixed(2)})<br>` +
+            `&gt;&gt;&gt; Result: Energy=${result.energy_kwh} kWh | EV Cost=₪${result.ev_cost} | ICE Equiv=₪${result.ice_cost} | Savings=₪${result.savings} (${result.savings_pct}%)`;
+        } catch (e) {
+          result = calculateFallback(capacity, socCurr, socTarget, evTariff, fuelPrice);
+        }
+      } else {
+        result = calculateFallback(capacity, socCurr, socTarget, evTariff, fuelPrice);
+        document.getElementById('py-console-log').innerHTML = 
+          `&gt;&gt;&gt; python_engine.evaluate(cap=${capacity}, curr=${socCurr}%, target=${socTarget}%, tariff=₪${evTariff.toFixed(2)})<br>` +
+          `&gt;&gt;&gt; Result: Energy=${result.energy_kwh} kWh | EV Cost=₪${result.ev_cost} | Savings=₪${result.savings} (${result.savings_pct}%)`;
+      }
+
+      // Update UI results
+      document.getElementById('py-out-cost').textContent = `₪ ${result.ev_cost.toFixed(2)}`;
+      document.getElementById('py-out-kwh').textContent = `${result.energy_kwh.toFixed(1)} kWh`;
+      document.getElementById('py-out-ice').textContent = `₪ ${result.ice_cost.toFixed(2)}`;
+      document.getElementById('py-out-savings').textContent = `₪ ${result.savings.toFixed(2)} (${result.savings_pct.toFixed(0)}%)`;
+    }
+
+    function calculateFallback(cap, curr, target, tariff, fuel) {
+      const delta = (target - curr) / 100.0;
+      const energy_kwh = cap * delta;
+      const ev_cost = energy_kwh * tariff;
+      const est_km = (energy_kwh / 18.0) * 100.0;
+      const ice_liters = (est_km / 100.0) * 7.5;
+      const ice_cost = ice_liters * fuel;
+      const savings = Math.max(0, ice_cost - ev_cost);
+      const savings_pct = ice_cost > 0 ? (savings / ice_cost * 100) : 0;
+      return { energy_kwh, ev_cost, ice_cost, savings, savings_pct, est_km };
+    }
+
+    /* ==========================================================================
+       Interactive Demo Simulator (Slide 7)
+       ========================================================================== */
+    let simMode = 'fuel';
+    let simInterval = null;
+    let simActive = false;
+
+    const bayOptions = {
+      fuel: [
+        { id: 'p1', name: 'Pump #1 — Unleaded 95 (Available)' },
+        { id: 'p2', name: 'Pump #2 — Unleaded 95 & Diesel (Recommended)' },
+        { id: 'p3', name: 'Pump #3 — Premium 98 Octane (Available)' },
+        { id: 'p4', name: 'Pump #4 — Unleaded 95 (Occupied)' }
+      ],
+      ev: [
+        { id: 'c1', name: 'Fast Bay #1 — CCS 150kW DC (Available)' },
+        { id: 'c2', name: 'Fast Bay #2 — CCS 300kW Ultra-Fast (Available)' },
+        { id: 'c3', name: 'Bay #3 — Type 2 22kW AC (Available)' },
+        { id: 'c4', name: 'Fast Bay #4 — CCS 150kW DC (In Use)' }
+      ]
+    };
+
+    function setSimMode(mode) {
+      if (simActive) return;
+      simMode = mode;
+      document.getElementById('sim-tab-fuel').classList.toggle('active', mode === 'fuel');
+      document.getElementById('sim-tab-ev').classList.toggle('active', mode === 'ev');
+
+      const baySelect = document.getElementById('sim-bay');
+      baySelect.innerHTML = '';
+      bayOptions[mode].forEach(opt => {
+        const option = document.createElement('option');
+        option.value = opt.id;
+        option.textContent = opt.name;
+        baySelect.appendChild(option);
+      });
+
+      if (mode === 'fuel') {
+        document.getElementById('meter-volume-lbl').textContent = 'Liters Dispensed';
+        document.getElementById('meter-rate-lbl').textContent = 'Flow Rate (L/min)';
+        document.getElementById('sim-start-btn').className = 'btn-gradient-action btn-orange-action';
+      } else {
+        document.getElementById('meter-volume-lbl').textContent = 'Energy Delivered (kWh)';
+        document.getElementById('meter-rate-lbl').textContent = 'Charging Speed (kW)';
+        document.getElementById('sim-start-btn').className = 'btn-gradient-action';
+      }
+      resetSimulation();
+    }
+
+    function startSimulation() {
+      if (simActive) return;
+      simActive = true;
+
+      const startBtn = document.getElementById('sim-start-btn');
+      startBtn.disabled = true;
+      document.getElementById('sim-status-title').textContent = 'Authorizing IoT connection with Bay...';
+      document.getElementById('sim-status-badge').textContent = 'CONNECTING';
+      document.getElementById('receipt-container').style.display = 'none';
+
+      let progress = 0;
+      let units = 0;
+      const targetUnits = simMode === 'fuel' ? 42.5 : 38.0;
+      const rate = simMode === 'fuel' ? 28.5 : 142.0;
+      const pricePerUnit = simMode === 'fuel' ? 7.85 : 1.85;
+
+      setTimeout(() => {
+        document.getElementById('sim-status-title').textContent = simMode === 'fuel' 
+          ? 'Dispensing Fuel — Unleaded 95...' 
+          : 'High Voltage Charging — DC Fast 150kW...';
+        document.getElementById('sim-status-badge').textContent = 'ENERGIZING';
+
+        simInterval = setInterval(() => {
+          progress += 2.5;
+          units = (progress / 100) * targetUnits;
+          const currentCost = units * pricePerUnit;
+
+          document.getElementById('sim-bar-fill').style.width = `${progress}%`;
+          document.getElementById('meter-volume').textContent = units.toFixed(2);
+          document.getElementById('meter-rate').textContent = (rate + (Math.random() * 2 - 1)).toFixed(1);
+          document.getElementById('meter-cost').textContent = `₪ ${currentCost.toFixed(2)}`;
+
+          if (progress >= 100) {
+            clearInterval(simInterval);
+            finishSimulation(units, currentCost);
+          }
+        }, 100);
+      }, 600);
+    }
+
+    function finishSimulation(totalUnits, totalCost) {
+      simActive = false;
+      document.getElementById('sim-status-title').textContent = 'Session Complete — Billed via Apple Pay';
+      document.getElementById('sim-status-badge').textContent = 'COMPLETED';
+      document.getElementById('meter-rate').textContent = '0.0';
+
+      const stationSelect = document.getElementById('sim-station');
+      const baySelect = document.getElementById('sim-bay');
+
+      document.getElementById('rec-station').textContent = stationSelect.options[stationSelect.selectedIndex].text;
+      document.getElementById('rec-bay').textContent = baySelect.options[baySelect.selectedIndex].text.split('(')[0];
+      document.getElementById('rec-units').textContent = simMode === 'fuel' 
+        ? `${totalUnits.toFixed(2)} Liters` 
+        : `${totalUnits.toFixed(2)} kWh`;
+      document.getElementById('rec-total').textContent = `₪ ${totalCost.toFixed(2)}`;
+      document.getElementById('rec-id').textContent = `TX-${Math.floor(100000 + Math.random() * 900000)}`;
+
+      document.getElementById('receipt-container').style.display = 'block';
+      document.getElementById('sim-start-btn').disabled = false;
+    }
+
+    function resetSimulation() {
+      if (simInterval) clearInterval(simInterval);
+      simActive = false;
+      document.getElementById('sim-bar-fill').style.width = '0%';
+      document.getElementById('meter-volume').textContent = '0.0';
+      document.getElementById('meter-rate').textContent = '0.0';
+      document.getElementById('meter-cost').textContent = '₪ 0.00';
+      document.getElementById('sim-status-title').textContent = 'Standby — Ready for Bay Selection';
+      document.getElementById('sim-status-badge').textContent = 'READY';
+      document.getElementById('receipt-container').style.display = 'none';
+      document.getElementById('sim-start-btn').disabled = false;
+    }
+
+    /* ==========================================================================
+       Three.js 3D Interactive Workflow Scene (Slide 6)
+       ========================================================================== */
+    let scene, camera, renderer, controls;
+    let carGroup, pumpGroup, chargerGroup, beamParticles;
+    let threeMode = 'ev'; // 'ev' or 'fuel'
+    let animStage = 1;
+    let animTime = 0;
+
+    function initThreeScene() {
+      const container = document.getElementById('three-canvas-container');
+      if (!container || typeof THREE === 'undefined') return;
+
+      const width = container.clientWidth || 800;
+      const height = container.clientHeight || 480;
+
+      // Scene
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x070e1c);
+      scene.fog = new THREE.FogExp2(0x070e1c, 0.035);
+
+      // Camera
+      camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
+      camera.position.set(6, 4.5, 8);
+
+      // Renderer
+      renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(width, height);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      container.appendChild(renderer.domElement);
+
+      // OrbitControls
+      if (typeof THREE.OrbitControls !== 'undefined') {
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.maxPolarAngle = Math.PI / 2.05;
+        controls.minDistance = 3;
+        controls.maxDistance = 18;
+      }
+
+      // Lights
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.45);
+      scene.add(ambientLight);
+
+      const dirLight = new THREE.DirectionalLight(0xffffff, 0.9);
+      dirLight.position.set(8, 12, 6);
+      dirLight.castShadow = true;
+      dirLight.shadow.mapSize.width = 1024;
+      dirLight.shadow.mapSize.height = 1024;
+      scene.add(dirLight);
+
+      // Triad Point Lights (Blue, Green, Orange)
+      const blueLight = new THREE.PointLight(0x00f2fe, 1.2, 10);
+      blueLight.position.set(0, 2, 2);
+      scene.add(blueLight);
+
+      const greenLight = new THREE.PointLight(0x00ff87, 1.5, 10);
+      greenLight.position.set(3, 2, -1);
+      scene.add(greenLight);
+
+      const orangeLight = new THREE.PointLight(0xff7b00, 1.5, 10);
+      orangeLight.position.set(-3, 2, -1);
+      scene.add(orangeLight);
+
+      // Floor Grid & Bay markings
+      buildStationFloor();
+
+      // Models
+      buildVehicle();
+      buildFuelPump();
+      buildEvCharger();
+      buildEnergyParticles();
+
+      // Render loop
+      animateThree();
+
+      window.handleThreeResize = function() {
+        if (!container || !renderer || !camera) return;
+        const w = container.clientWidth;
+        const h = container.clientHeight;
+        if (w > 0 && h > 0) {
+          camera.aspect = w / h;
+          camera.updateProjectionMatrix();
+          renderer.setSize(w, h);
+        }
+      };
+      window.addEventListener('resize', window.handleThreeResize);
+    }
+
+    function buildStationFloor() {
+      // Floor plane
+      const floorGeo = new THREE.PlaneGeometry(30, 30);
+      const floorMat = new THREE.MeshStandardMaterial({
+        color: 0x091426,
+        roughness: 0.8,
+        metalness: 0.2
+      });
+      const floor = new THREE.Mesh(floorGeo, floorMat);
+      floor.rotation.x = -Math.PI / 2;
+      floor.receiveShadow = true;
+      scene.add(floor);
+
+      // Grid helper
+      const grid = new THREE.GridHelper(30, 30, 0x00f2fe, 0x13233e);
+      grid.position.y = 0.01;
+      scene.add(grid);
+
+      // Parking bay lines (Cyan)
+      const bayMat = new THREE.MeshBasicMaterial({ color: 0x00f2fe });
+      const lineGeo = new THREE.BoxGeometry(0.08, 0.02, 4.5);
+
+      const lineLeft = new THREE.Mesh(lineGeo, bayMat);
+      lineLeft.position.set(-1.8, 0.02, 0);
+      scene.add(lineLeft);
+
+      const lineRight = new THREE.Mesh(lineGeo, bayMat);
+      lineRight.position.set(1.8, 0.02, 0);
+      scene.add(lineRight);
+    }
+
+    function buildVehicle() {
+      carGroup = new THREE.Group();
+
+      // Main body (Metallic Blue)
+      const bodyGeo = new THREE.BoxGeometry(2, 0.65, 4);
+      const bodyMat = new THREE.MeshStandardMaterial({
+        color: 0x0284c7,
+        metalness: 0.8,
+        roughness: 0.25
+      });
+      const body = new THREE.Mesh(bodyGeo, bodyMat);
+      body.position.y = 0.6;
+      body.castShadow = true;
+      carGroup.add(body);
+
+      // Cabin / Roof (Dark tinted glass)
+      const cabinGeo = new THREE.BoxGeometry(1.6, 0.55, 2.2);
+      const cabinMat = new THREE.MeshStandardMaterial({
+        color: 0x050c18,
+        metalness: 0.9,
+        roughness: 0.1,
+        transparent: true,
+        opacity: 0.85
+      });
+      const cabin = new THREE.Mesh(cabinGeo, cabinMat);
+      cabin.position.set(0, 1.15, -0.2);
+      cabin.castShadow = true;
+      carGroup.add(cabin);
+
+      // Headlights (Cyan glow)
+      const lightGeo = new THREE.BoxGeometry(0.35, 0.12, 0.1);
+      const lightMat = new THREE.MeshBasicMaterial({ color: 0x00f2fe });
+
+      const hl1 = new THREE.Mesh(lightGeo, lightMat);
+      hl1.position.set(0.65, 0.6, 2.02);
+      carGroup.add(hl1);
+
+      const hl2 = new THREE.Mesh(lightGeo, lightMat);
+      hl2.position.set(-0.65, 0.6, 2.02);
+      carGroup.add(hl2);
+
+      // Tail lights (Orange/Red)
+      const tailMat = new THREE.MeshBasicMaterial({ color: 0xff6b35 });
+      const tl1 = new THREE.Mesh(lightGeo, tailMat);
+      tl1.position.set(0.65, 0.6, -2.02);
+      carGroup.add(tl1);
+
+      const tl2 = new THREE.Mesh(lightGeo, tailMat);
+      tl2.position.set(-0.65, 0.6, -2.02);
+      carGroup.add(tl2);
+
+      // Wheels
+      const wheelGeo = new THREE.CylinderGeometry(0.35, 0.35, 0.25, 16);
+      const wheelMat = new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.9 });
+
+      const wheelPositions = [
+        [-1.05, 0.35, 1.2],
+        [1.05, 0.35, 1.2],
+        [-1.05, 0.35, -1.2],
+        [1.05, 0.35, -1.2]
+      ];
+
+      wheelPositions.forEach(pos => {
+        const wheel = new THREE.Mesh(wheelGeo, wheelMat);
+        wheel.rotation.z = Math.PI / 2;
+        wheel.position.set(...pos);
+        wheel.castShadow = true;
+        carGroup.add(wheel);
+      });
+
+      scene.add(carGroup);
+    }
+
+    function buildFuelPump() {
+      pumpGroup = new THREE.Group();
+      pumpGroup.position.set(-3.2, 0, 0);
+
+      // Pump column (Orange theme)
+      const colGeo = new THREE.BoxGeometry(0.9, 2.6, 0.8);
+      const colMat = new THREE.MeshStandardMaterial({ color: 0x1a263d, roughness: 0.4 });
+      const column = new THREE.Mesh(colGeo, colMat);
+      column.position.y = 1.3;
+      column.castShadow = true;
+      pumpGroup.add(column);
+
+      // Illuminated Orange Display Header
+      const headerGeo = new THREE.BoxGeometry(0.92, 0.45, 0.82);
+      const headerMat = new THREE.MeshStandardMaterial({ color: 0xff7b00, emissive: 0xff7b00, emissiveIntensity: 0.4 });
+      const header = new THREE.Mesh(headerGeo, headerMat);
+      header.position.y = 2.4;
+      pumpGroup.add(header);
+
+      // Fuel Nozzle
+      const nozzleGeo = new THREE.CylinderGeometry(0.06, 0.06, 0.6);
+      const nozzleMat = new THREE.MeshStandardMaterial({ color: 0xff6b35 });
+      const nozzle = new THREE.Mesh(nozzleGeo, nozzleMat);
+      nozzle.position.set(0.5, 1.4, 0);
+      nozzle.rotation.z = 0.5;
+      pumpGroup.add(nozzle);
+
+      scene.add(pumpGroup);
+    }
+
+    function buildEvCharger() {
+      chargerGroup = new THREE.Group();
+      chargerGroup.position.set(3.2, 0, 0);
+
+      // Fast Charger column (Neon Green theme)
+      const colGeo = new THREE.BoxGeometry(0.8, 2.8, 0.7);
+      const colMat = new THREE.MeshStandardMaterial({ color: 0x0f1c30, roughness: 0.3 });
+      const col = new THREE.Mesh(colGeo, colMat);
+      col.position.y = 1.4;
+      col.castShadow = true;
+      chargerGroup.add(col);
+
+      // Glowing Status LED bar
+      const ledGeo = new THREE.BoxGeometry(0.12, 1.8, 0.72);
+      const ledMat = new THREE.MeshBasicMaterial({ color: 0x00ff87 });
+      const led = new THREE.Mesh(ledGeo, ledMat);
+      led.position.set(-0.38, 1.4, 0);
+      chargerGroup.add(led);
+
+      // Top CCS banner
+      const topGeo = new THREE.BoxGeometry(0.84, 0.4, 0.74);
+      const topMat = new THREE.MeshStandardMaterial({ color: 0x00ff87, emissive: 0x00ff87, emissiveIntensity: 0.5 });
+      const top = new THREE.Mesh(topGeo, topMat);
+      top.position.y = 2.65;
+      chargerGroup.add(top);
+
+      scene.add(chargerGroup);
+    }
+
+    function buildEnergyParticles() {
+      const particleCount = 60;
+      const geo = new THREE.BufferGeometry();
+      const positions = new Float32Array(particleCount * 3);
+
+      for (let i = 0; i < particleCount * 3; i += 3) {
+        positions[i] = (Math.random() - 0.5) * 4;
+        positions[i + 1] = Math.random() * 2 + 0.5;
+        positions[i + 2] = (Math.random() - 0.5) * 2;
+      }
+
+      geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+      const mat = new THREE.PointsMaterial({
+        size: 0.12,
+        color: 0x00ff87,
+        transparent: true,
+        opacity: 0.8
+      });
+
+      beamParticles = new THREE.Points(geo, mat);
+      scene.add(beamParticles);
+    }
+
+    function animateThree() {
+      requestAnimationFrame(animateThree);
+      animTime += 0.02;
+
+      if (controls) controls.update();
+
+      // Animate workflow stages based on timer
+      const cycle = (animTime % 12);
+      if (cycle < 3) {
+        setStagePill(1); // Stage 1: Arrival
+        if (carGroup) carGroup.position.z = Math.min(0, -6 + cycle * 2);
+      } else if (cycle < 6) {
+        setStagePill(2); // Stage 2: Handshake
+        if (carGroup) carGroup.position.z = 0;
+      } else if (cycle < 9) {
+        setStagePill(3); // Stage 3: Energizing Stream
+        if (beamParticles) {
+          beamParticles.visible = true;
+          const pos = beamParticles.geometry.attributes.position.array;
+          const targetX = threeMode === 'ev' ? 1.0 : -1.0;
+          const sourceX = threeMode === 'ev' ? 3.0 : -3.0;
+          beamParticles.material.color.setHex(threeMode === 'ev' ? 0x00ff87 : 0xff7b00);
+
+          for (let i = 0; i < pos.length; i += 3) {
+            pos[i] += (targetX - pos[i]) * 0.05 + (Math.random() - 0.5) * 0.05;
+            pos[i + 1] += (0.9 - pos[i + 1]) * 0.05;
+            if (Math.abs(pos[i] - targetX) < 0.2) {
+              pos[i] = sourceX;
+              pos[i + 1] = 1.4;
+            }
+          }
+          beamParticles.geometry.attributes.position.needsUpdate = true;
+        }
+      } else {
+        setStagePill(4); // Stage 4: Auto-Pay Complete
+        if (beamParticles) beamParticles.visible = false;
+      }
+
+      renderer.render(scene, camera);
+    }
+
+    function setStagePill(stageNum) {
+      if (animStage === stageNum) return;
+      animStage = stageNum;
+      for (let i = 1; i <= 4; i++) {
+        const pill = document.getElementById(`stage-pill-${i}`);
+        if (pill) pill.classList.toggle('active', i === stageNum);
+      }
+    }
+
+    function replayThreeAnimation() {
+      animTime = 0;
+      setStagePill(1);
+    }
+
+    function resetThreeCamera() {
+      if (camera && controls) {
+        camera.position.set(6, 4.5, 8);
+        controls.target.set(0, 1, 0);
+        controls.update();
+      }
+    }
+
+    function toggleThreeEnergyMode() {
+      threeMode = (threeMode === 'ev') ? 'fuel' : 'ev';
+      const btn = document.getElementById('btn-toggle-energy');
+      if (btn) {
+        btn.textContent = threeMode === 'ev' ? '⚡ Mode: EV Fast Charger' : '⛽ Mode: Fossil Fuel Pump';
+      }
+      if (beamParticles) {
+        beamParticles.material.color.setHex(threeMode === 'ev' ? 0x00ff87 : 0xff7b00);
+      }
+    }
+
+    /* ==========================================================================
+       Window Initializer
+       ========================================================================== */
+    window.addEventListener('DOMContentLoaded', () => {
+      initSlides();
+      setSimMode('fuel');
+      initThreeScene();
+      initPyodideEngine();
+    });
+  </script>
+</body>
+</html>

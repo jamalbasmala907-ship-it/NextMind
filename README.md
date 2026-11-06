@@ -17,12 +17,16 @@ To ensure strict version control, local progress preservation, and clear progres
 
 ```
 NextMind/
+├── assets/                  # Brand assets (SVG logos and vector badges)
+│   ├── fuelandgo-logo.svg   # Primary Fuel&Go logo
+│   └── fuelandgo-icon.svg   # Brand icon
 ├── current_version.html     # Active working version of the presentation (always up to date)
 ├── index.html               # Direct entry point (redirects to current_version.html)
 ├── PRD.md                   # Complete Product Requirement Document
 ├── README.md                # Project architecture, instructions, and documentation
 ├── Sub_NextMind/            # Internal snapshot folder for historical milestones
-│   └── v1_initial.html      # Milestone 1: 10-slide core presentation + simulator
+│   ├── v1_initial.html      # Milestone 1: 10-slide core presentation + simulator
+│   └── v2_calculator.html   # Milestone 2: Python calculator + Three.js 3D + Triad theme
 └── prompts/                 # Prompt logs and iterative refinement documentation
     └── prompt_log.md        # Complete record of engineering prompts and architecture decisions
 ```
