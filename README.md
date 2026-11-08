@@ -1,6 +1,6 @@
 # Fuel&Go — Interactive Product Management Presentation
 
-![Version](https://img.shields.io/badge/Version-v1.0.0_Initial-00f2fe)
+![Version](https://img.shields.io/badge/Version-v4.0_Calculator_Fix-00f2fe)
 ![Team](https://img.shields.io/badge/Team-NextMind-00ff87)
 ![Status](https://img.shields.io/badge/Status-Approved%20%2F%20In%20Development-blue)
 ![Evaluator](https://img.shields.io/badge/Evaluator-rmisegal%40gmail.com-purple)
@@ -22,7 +22,6 @@ NextMind/
 │   ├── fuelandgo-icon.svg   # Brand icon
 │   └── mvp-user-flow.svg    # Complete 4-stage sequential MVP User Flow wireframes
 ├── current_version.html     # Active working version of the presentation (always up to date)
-├── index.html               # Direct entry point (redirects to current_version.html)
 ├── PRD.md                   # Complete Product Requirement Document
 ├── README.md                # Project architecture, instructions, and documentation
 ├── Sub_NextMind/            # Internal snapshot folder for historical milestones
@@ -86,7 +85,7 @@ No build tools, npm packages, or server installation required.
    git clone <repo-url>
    cd NextMind
    ```
-2. Double-click **`current_version.html`** or **`index.html`** in any modern web browser (Google Chrome, Microsoft Edge, Safari, Mozilla Firefox).
+2. Double-click **`current_version.html`** in any modern web browser (Google Chrome, Microsoft Edge, Safari, Mozilla Firefox).
 3. **Keyboard Controls:**
    - Next slide: `Right Arrow` ($\rightarrow$), `Spacebar`, or `Page Down`
    - Previous slide: `Left Arrow` ($\leftarrow$) or `Page Up`
@@ -99,4 +98,4 @@ No build tools, npm packages, or server installation required.
 
 - **Team:** NextMind
 - **Course Evaluator Contact:** `rmisegal@gmail.com`
-- **Milestone:** v1 Initial Prototype
+- **Milestone:** v4 Calculator Fix (`v4_calculator_fix.html`)
