@@ -64,3 +64,15 @@ This log records the engineering prompts, requirements alignment, and architectu
 - **Goal:** Synchronize master `current_version.html` with `Sub_NextMind/v3_refinement.html` to guarantee absolute code uniformity across root active files and internal version snapshots.
 - **Verification:** Verified identical byte-level parity (94,799 bytes) between `current_version.html` and `Sub_NextMind/v3_refinement.html`.
 - **Commit Target:** `'Sync sub_nextmind v3_refinement with the latest fully-updated current_version.html including logo and MVP user flow'`.
+
+
+---
+
+## Iteration 5: Version 4 (v4_calculator_fix) Milestone
+
+### Prompt Summary
+- **Goal:** Upgrade Fuel&Go interactive presentation to Version 4 (`v4_calculator_fix`):
+  1. **Python Calculator Real-Time Fix:** Fix interactive calculation logic on Slide 8 so adjusting any slider/input on the left updates estimated costs, energy to deliver, and savings on the right automatically and instantly in real time without `undefined` errors or raw Python console text underneath.
+  2. **Version v4 & Master Update:** Save `Sub_NextMind/v4_calculator_fix.html` and update root `current_version.html`.
+  3. **Sub-Folder Alignment:** Ensure relative asset paths (`assets/` vs `../assets/`) are properly configured in both files.
+  4. **Git Workflow & Push:** Commit with `'Upgrade to v4: Fix real-time Python calculator reactivity, remove undefined console text, and save snapshot in Sub_NextMind'` and push to GitHub.

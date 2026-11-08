@@ -26,9 +26,10 @@ NextMind/
 ├── PRD.md                   # Complete Product Requirement Document
 ├── README.md                # Project architecture, instructions, and documentation
 ├── Sub_NextMind/            # Internal snapshot folder for historical milestones
-│   ├── v1_initial.html      # Milestone 1: 10-slide core presentation + simulator
-│   ├── v2_calculator.html   # Milestone 2: Python calculator + Three.js 3D + Triad theme
-│   └── v3_refinement.html   # Milestone 3: Dropdown orange visibility fix + MVP wireframes
+│   ├── v1_initial.html        # Milestone 1: 10-slide core presentation + simulator
+│   ├── v2_calculator.html     # Milestone 2: Python calculator + Three.js 3D + Triad theme
+│   ├── v3_refinement.html     # Milestone 3: Dropdown orange visibility fix + MVP wireframes
+│   └── v4_calculator_fix.html # Milestone 4: Real-time Python calculator fix & clean numerical UI
 └── prompts/                 # Prompt logs and iterative refinement documentation
     └── prompt_log.md        # Complete record of engineering prompts and architecture decisions
 ```

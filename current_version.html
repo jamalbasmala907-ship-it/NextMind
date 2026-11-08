@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fuel&Go — Version 3 (v3_refinement) | NextMind</title>
-  <meta name="description" content="Fuel&Go Interactive Presentation v3: User Flow Wireframes, High-Visibility UI & Python Engine by Basmala Jamal & Maria Mnasra (Team NextMind)">
+  <title>Fuel&Go — Version 4 (v4_calculator_fix) | NextMind</title>
+  <meta name="description" content="Fuel&Go Interactive Presentation v4: Real-Time Python Calculator, User Flow Wireframes, High-Visibility UI & 3D Workflow by Basmala Jamal & Maria Mnasra (Team NextMind)">
 
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="assets/fuelandgo-icon.svg">
@@ -1003,7 +1003,7 @@
           <div class="pulse-dot"></div>
           <span id="py-status-indicator">Python WASM Engine: Ready</span>
         </div>
-        <span class="version-indicator">v3.0 (v3_refinement)</span>
+        <span class="version-indicator">v4.0 (v4_calculator_fix)</span>
         <div class="shortcut-hint">
           <span class="kbd-key">←</span>
           <span class="kbd-key">→</span>
@@ -1482,7 +1482,7 @@
                 <span>Battery Capacity (קיבולת סוללה)</span>
                 <span id="lbl-py-cap" class="currency-tag" style="color: var(--blue-primary); font-weight: 700;">77 kWh</span>
               </label>
-              <input type="range" id="py-capacity" class="calc-slider" min="30" max="130" value="77" oninput="runPythonCalculation()">
+              <input type="range" id="py-capacity" class="calc-slider" min="30" max="130" value="77" oninput="runPythonCalculation(event)">
             </div>
 
             <!-- Current SoC -->
@@ -1491,7 +1491,7 @@
                 <span>Current State of Charge (רמת טעינה נוכחית)</span>
                 <span id="lbl-py-curr" class="currency-tag" style="color: var(--orange-accent); font-weight: 700;">20%</span>
               </label>
-              <input type="range" id="py-soc-curr" class="calc-slider orange" min="5" max="95" value="20" oninput="runPythonCalculation()">
+              <input type="range" id="py-soc-curr" class="calc-slider orange" min="5" max="95" value="20" oninput="runPythonCalculation(event)">
             </div>
 
             <!-- Target SoC -->
@@ -1500,7 +1500,7 @@
                 <span>Target State of Charge (יעד טעינה)</span>
                 <span id="lbl-py-target" class="currency-tag" style="color: var(--green-energy); font-weight: 700;">80%</span>
               </label>
-              <input type="range" id="py-soc-target" class="calc-slider green" min="20" max="100" value="80" oninput="runPythonCalculation()">
+              <input type="range" id="py-soc-target" class="calc-slider green" min="20" max="100" value="80" oninput="runPythonCalculation(event)">
             </div>
 
             <!-- EV Tariff -->
@@ -1509,7 +1509,7 @@
                 <span>EV Tariff (מחיר לקוט״ש)</span>
                 <span id="lbl-py-tariff" class="currency-tag" style="color: #fff; font-weight: 700;">₪ 1.85 / kWh</span>
               </label>
-              <input type="range" id="py-tariff" class="calc-slider" min="0.60" max="3.20" step="0.05" value="1.85" oninput="runPythonCalculation()">
+              <input type="range" id="py-tariff" class="calc-slider" min="0.60" max="3.20" step="0.05" value="1.85" oninput="runPythonCalculation(event)">
             </div>
 
             <!-- Fuel Price Benchmark -->
@@ -1518,7 +1518,7 @@
                 <span>Fuel Benchmark Price (בנזין 95)</span>
                 <span id="lbl-py-fuel" class="currency-tag" style="color: #fff; font-weight: 700;">₪ 7.85 / Liter</span>
               </label>
-              <input type="range" id="py-fuel-price" class="calc-slider orange" min="6.00" max="9.50" step="0.05" value="7.85" oninput="runPythonCalculation()">
+              <input type="range" id="py-fuel-price" class="calc-slider orange" min="6.00" max="9.50" step="0.05" value="7.85" oninput="runPythonCalculation(event)">
             </div>
           </div>
 
@@ -1528,7 +1528,7 @@
               <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim);">
                 Estimated Session Cost (עלות טעינה)
               </div>
-              <div id="py-out-cost" style="font-family: var(--font-mono); font-size: 2.8rem; font-weight: 900; color: var(--green-energy); margin: 0.4rem 0;">
+              <div id="py-out-cost" class="currency-tag" style="font-family: var(--font-mono); font-size: 2.8rem; font-weight: 900; color: var(--green-energy); margin: 0.4rem 0;">
                 ₪ 85.47
               </div>
 
@@ -1536,34 +1536,37 @@
               <div class="calc-stats-grid">
                 <div class="stat-tile val-blue">
                   <div class="tile-lbl">Energy to Deliver</div>
-                  <div class="tile-val" id="py-out-kwh">46.2 kWh</div>
+                  <div class="tile-val currency-tag" id="py-out-kwh">46.2 kWh</div>
                 </div>
                 <div class="stat-tile val-orange">
                   <div class="tile-lbl">ICE Equivalent Cost</div>
-                  <div class="tile-val" id="py-out-ice">₪ 251.20</div>
+                  <div class="tile-val currency-tag" id="py-out-ice">₪ 151.11</div>
                 </div>
               </div>
 
               <div style="background: rgba(0, 255, 135, 0.08); border: 1px solid var(--border-green); border-radius: 12px; padding: 1rem; display: flex; justify-content: space-between; align-items: center;">
                 <span style="font-weight: 700; color: var(--green-energy);">Direct Driver Savings:</span>
-                <span id="py-out-savings" style="font-family: var(--font-mono); font-weight: 800; font-size: 1.25rem; color: #fff;">
-                  ₪ 165.73 (66%)
+                <span id="py-out-savings" class="currency-tag" style="font-family: var(--font-mono); font-weight: 800; font-size: 1.25rem; color: #fff;">
+                  ₪ 65.64 (43%)
                 </span>
               </div>
             </div>
 
-            <!-- Python Console Output Preview -->
+            <!-- Clean Session Efficiency & Range Summary -->
             <div>
-              <div style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-dim); margin-top: 1rem;">
-                Live Python Function Output:
-              </div>
-              <div class="py-console-preview" id="py-console-log">
-                &gt;&gt;&gt; calculate_ev(capacity=77, curr=20, target=80, tariff=1.85)<br>
-                &gt;&gt;&gt; {'energy_kwh': 46.2, 'ev_cost': 85.47, 'savings': 165.73}
+              <div class="calc-stats-grid" style="margin: 1rem 0 0.6rem 0;">
+                <div class="stat-tile" style="padding: 0.75rem 1rem;">
+                  <div class="tile-lbl">Est. Driving Range Added</div>
+                  <div id="py-out-range" class="currency-tag" style="font-family: var(--font-mono); font-size: 1.1rem; font-weight: 800; color: var(--blue-primary);">256.7 km</div>
+                </div>
+                <div class="stat-tile" style="padding: 0.75rem 1rem;">
+                  <div class="tile-lbl">Equiv. Petrol Displaced</div>
+                  <div id="py-out-liters" class="currency-tag" style="font-family: var(--font-mono); font-size: 1.1rem; font-weight: 800; color: var(--orange-accent);">19.3 Liters</div>
+                </div>
               </div>
 
-              <div style="font-size: 0.72rem; color: var(--text-dim); margin-top: 0.6rem; line-height: 1.4;">
-                * Assumptions: Formula $\text{Energy} = \text{Cap} \times \frac{\Delta\%}{100}$. Benchmark ICE consumption: 7.5 L/100km, EV: 18 kWh/100km. Excludes battery thermal overhead.
+              <div style="font-size: 0.72rem; color: var(--text-dim); margin-top: 0.4rem; line-height: 1.4;">
+                * Assumptions: Energy (kWh) = Capacity × (Δ% / 100). Benchmark ICE consumption: 7.5 L/100km, EV: 18 kWh/100km. Excludes battery thermal overhead.
               </div>
             </div>
           </div>
@@ -1665,8 +1668,8 @@
             <p class="card-desc">
               • <strong>v1_initial.html:</strong> Core 10-slide outline, design system &amp; flow simulation.<br>
               • <strong>v2_calculator.html:</strong> Python WASM computational engine, Three.js 3D spatial workflow, triad color theme (Blue/Green/Orange), team names &amp; logo branding.<br>
-              • <strong>v3_refinement.html (Current):</strong> High-visibility orange dropdown option text fix, 4-stage sequential MVP User Flow wireframes.<br>
-              • <strong>v4_final.html:</strong> Comprehensive final distribution bundle.
+              • <strong>v3_refinement.html:</strong> High-visibility orange dropdown option text fix, 4-stage sequential MVP User Flow wireframes.<br>
+              • <strong>v4_calculator_fix.html (Current):</strong> Real-time Python calculator reactivity fix, clean numerical output rendering &amp; full sub-folder alignment.
             </p>
           </div>
         </div>
@@ -1688,7 +1691,7 @@
 
           <div>
             <div style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-dim);">Git Repository</div>
-            <div style="font-weight: 700; color: var(--green-energy);">GitHub Synced (v3 Milestone)</div>
+            <div style="font-weight: 700; color: var(--green-energy);">GitHub Synced (v4 Milestone)</div>
           </div>
         </div>
       </section>
@@ -1720,6 +1723,8 @@
        Python Calculation Script (Embedded WebAssembly Pyodide Execution)
        ========================================================================== -->
   <script type="text/python" id="python-calc-code">
+import json
+
 def py_calculate_ev(capacity, current_soc, target_soc, ev_tariff, fuel_benchmark):
     try:
         capacity = float(capacity)
@@ -1744,16 +1749,17 @@ def py_calculate_ev(capacity, current_soc, target_soc, ev_tariff, fuel_benchmark
         savings = max(0.0, ice_cost - ev_cost)
         savings_pct = (savings / ice_cost * 100.0) if ice_cost > 0 else 0.0
 
-        return {
+        return json.dumps({
             "energy_kwh": round(energy_kwh, 2),
             "ev_cost": round(ev_cost, 2),
             "ice_cost": round(ice_cost, 2),
             "savings": round(savings, 2),
             "savings_pct": round(savings_pct, 1),
-            "est_km": round(est_km, 1)
-        }
+            "est_km": round(est_km, 1),
+            "equiv_fuel_liters": round(equiv_fuel_liters, 2)
+        })
     except Exception as e:
-        return {"error": str(e)}
+        return json.dumps({"error": str(e)})
   </script>
 
   <!-- ==========================================================================
@@ -1890,16 +1896,33 @@ def py_calculate_ev(capacity, current_soc, target_soc, ev_tariff, fuel_benchmark
       runPythonCalculation();
     }
 
-    function runPythonCalculation() {
-      const capacity = parseFloat(document.getElementById('py-capacity').value);
-      let socCurr = parseFloat(document.getElementById('py-soc-curr').value);
-      let socTarget = parseFloat(document.getElementById('py-soc-target').value);
-      const evTariff = parseFloat(document.getElementById('py-tariff').value);
-      const fuelPrice = parseFloat(document.getElementById('py-fuel-price').value);
+    function runPythonCalculation(evt) {
+      const capEl = document.getElementById('py-capacity');
+      const currEl = document.getElementById('py-soc-curr');
+      const targetEl = document.getElementById('py-soc-target');
+      const tariffEl = document.getElementById('py-tariff');
+      const fuelEl = document.getElementById('py-fuel-price');
+
+      if (!capEl || !currEl || !targetEl || !tariffEl || !fuelEl) return;
+
+      const capacity = parseFloat(capEl.value) || 77;
+      let socCurr = parseFloat(currEl.value) || 20;
+      let socTarget = parseFloat(targetEl.value) || 80;
+      const evTariff = parseFloat(tariffEl.value) || 1.85;
+      const fuelPrice = parseFloat(fuelEl.value) || 7.85;
 
       if (socCurr >= socTarget) {
-        socTarget = Math.min(100, socCurr + 5);
-        document.getElementById('py-soc-target').value = socTarget;
+        if (evt && evt.target === targetEl) {
+          socCurr = Math.max(5, socTarget - 5);
+          currEl.value = socCurr;
+        } else {
+          socTarget = Math.min(100, socCurr + 5);
+          targetEl.value = socTarget;
+          if (socCurr >= socTarget) {
+            socCurr = Math.max(5, socTarget - 5);
+            currEl.value = socCurr;
+          }
+        }
       }
 
       document.getElementById('lbl-py-cap').textContent = `${capacity} kWh`;
@@ -1908,32 +1931,60 @@ def py_calculate_ev(capacity, current_soc, target_soc, ev_tariff, fuel_benchmark
       document.getElementById('lbl-py-tariff').textContent = `₪ ${evTariff.toFixed(2)} / kWh`;
       document.getElementById('lbl-py-fuel').textContent = `₪ ${fuelPrice.toFixed(2)} / Liter`;
 
-      let result = null;
+      const fallbackResult = calculateFallback(capacity, socCurr, socTarget, evTariff, fuelPrice);
+      let result = fallbackResult;
 
-      // Attempt Python execution via Pyodide
+      // Attempt Python execution via Pyodide with strict JSON/Object conversion & validation
       if (pyodideReady && pyodideInstance) {
         try {
           const pyCall = `py_calculate_ev(${capacity}, ${socCurr}, ${socTarget}, ${evTariff}, ${fuelPrice})`;
           const pyRes = pyodideInstance.runPython(pyCall);
-          result = pyRes.toJs ? pyRes.toJs() : pyRes;
-          document.getElementById('py-console-log').innerHTML = 
-            `&gt;&gt;&gt; py_calculate_ev(cap=${capacity}, curr=${socCurr}%, target=${socTarget}%, tariff=₪${evTariff.toFixed(2)})<br>` +
-            `&gt;&gt;&gt; Result: Energy=${result.energy_kwh} kWh | EV Cost=₪${result.ev_cost} | ICE Equiv=₪${result.ice_cost} | Savings=₪${result.savings} (${result.savings_pct}%)`;
+          let parsed = null;
+
+          if (typeof pyRes === 'string') {
+            parsed = JSON.parse(pyRes);
+          } else if (pyRes && typeof pyRes.toJs === 'function') {
+            const jsVal = pyRes.toJs({ dict_converter: Object.fromEntries });
+            if (typeof pyRes.destroy === 'function') pyRes.destroy();
+            parsed = jsVal instanceof Map ? Object.fromEntries(jsVal) : jsVal;
+          } else if (pyRes && typeof pyRes === 'object') {
+            parsed = pyRes instanceof Map ? Object.fromEntries(pyRes) : pyRes;
+          }
+
+          if (
+            parsed &&
+            Number.isFinite(Number(parsed.energy_kwh)) &&
+            Number.isFinite(Number(parsed.ev_cost)) &&
+            Number.isFinite(Number(parsed.ice_cost)) &&
+            Number.isFinite(Number(parsed.savings)) &&
+            Number.isFinite(Number(parsed.savings_pct))
+          ) {
+            result = {
+              energy_kwh: Number(parsed.energy_kwh),
+              ev_cost: Number(parsed.ev_cost),
+              ice_cost: Number(parsed.ice_cost),
+              savings: Number(parsed.savings),
+              savings_pct: Number(parsed.savings_pct),
+              est_km: Number.isFinite(Number(parsed.est_km)) ? Number(parsed.est_km) : fallbackResult.est_km,
+              equiv_fuel_liters: Number.isFinite(Number(parsed.equiv_fuel_liters)) ? Number(parsed.equiv_fuel_liters) : fallbackResult.equiv_fuel_liters
+            };
+          }
         } catch (e) {
-          result = calculateFallback(capacity, socCurr, socTarget, evTariff, fuelPrice);
+          result = fallbackResult;
         }
-      } else {
-        result = calculateFallback(capacity, socCurr, socTarget, evTariff, fuelPrice);
-        document.getElementById('py-console-log').innerHTML = 
-          `&gt;&gt;&gt; python_engine.evaluate(cap=${capacity}, curr=${socCurr}%, target=${socTarget}%, tariff=₪${evTariff.toFixed(2)})<br>` +
-          `&gt;&gt;&gt; Result: Energy=${result.energy_kwh} kWh | EV Cost=₪${result.ev_cost} | Savings=₪${result.savings} (${result.savings_pct}%)`;
       }
 
-      // Update UI results
+      // Update UI results cleanly in real time
       document.getElementById('py-out-cost').textContent = `₪ ${result.ev_cost.toFixed(2)}`;
       document.getElementById('py-out-kwh').textContent = `${result.energy_kwh.toFixed(1)} kWh`;
       document.getElementById('py-out-ice').textContent = `₪ ${result.ice_cost.toFixed(2)}`;
       document.getElementById('py-out-savings').textContent = `₪ ${result.savings.toFixed(2)} (${result.savings_pct.toFixed(0)}%)`;
+
+      const rangeEl = document.getElementById('py-out-range');
+      if (rangeEl) rangeEl.textContent = `${result.est_km.toFixed(1)} km`;
+
+      const litersEl = document.getElementById('py-out-liters');
+      if (litersEl) litersEl.textContent = `${result.equiv_fuel_liters.toFixed(1)} Liters`;
     }
 
     function calculateFallback(cap, curr, target, tariff, fuel) {
@@ -1941,11 +1992,22 @@ def py_calculate_ev(capacity, current_soc, target_soc, ev_tariff, fuel_benchmark
       const energy_kwh = cap * delta;
       const ev_cost = energy_kwh * tariff;
       const est_km = (energy_kwh / 18.0) * 100.0;
-      const ice_liters = (est_km / 100.0) * 7.5;
-      const ice_cost = ice_liters * fuel;
+      const equiv_fuel_liters = (est_km / 100.0) * 7.5;
+      const ice_cost = equiv_fuel_liters * fuel;
       const savings = Math.max(0, ice_cost - ev_cost);
       const savings_pct = ice_cost > 0 ? (savings / ice_cost * 100) : 0;
-      return { energy_kwh, ev_cost, ice_cost, savings, savings_pct, est_km };
+      return { energy_kwh, ev_cost, ice_cost, savings, savings_pct, est_km, equiv_fuel_liters };
+    }
+
+    function bindCalculatorInputs() {
+      const sliderIds = ['py-capacity', 'py-soc-curr', 'py-soc-target', 'py-tariff', 'py-fuel-price'];
+      sliderIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.addEventListener('input', runPythonCalculation);
+          el.addEventListener('change', runPythonCalculation);
+        }
+      });
     }
 
     /* ==========================================================================
@@ -2433,6 +2495,8 @@ def py_calculate_ev(capacity, current_soc, target_soc, ev_tariff, fuel_benchmark
     window.addEventListener('DOMContentLoaded', () => {
       initSlides();
       setSimMode('fuel');
+      bindCalculatorInputs();
+      runPythonCalculation();
       initThreeScene();
       initPyodideEngine();
     });
