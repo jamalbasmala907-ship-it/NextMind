@@ -32,20 +32,27 @@ Developed by **TEAM NEXTMIND** (**Basmala Jamal** & **Maria Mnasra**), this repo
 ## 🖼️ Presentation Visual Overview & Screenshots (v4)
 
 ### 1. Official Fuel&Go Brand Identity
-Unified triad palette combining **Electric Blue** (`#00f2fe`), **Neon Emerald Green** (`#00ff87`), and **Energetic Orange** (`#ff7b00`) across all presentation slides and UI components.
+Unified triad palette combining **Electric Blue** (`#00f2fe`), **Neon Emerald Green** (`#00ff87`), and **Energetic Orange** (`#ff7b00`) across all presentation slides and UI components, displayed inside a dark presentation theme container so the white **"Fuel"** wordmark remains crisp and clearly legible.
 
-![Fuel&Go Logo](assets/fuelandgo-logo.svg)
+![Fuel&Go Logo](assets/fuelandgo-logo-card.svg)
 
 ---
 
-### 2. Python Cost Estimator & Energy Math Interface (Slide 8 — v4 Real-Time Engine)
+### 2. Interactive 3D Station & Live Workflow Demo Animation (Slide 6 & Slide 7)
+Animated demonstration of the 4-stage Fuel&Go station workflow (**01. Station Arrival** $\rightarrow$ **02. Geofence Lock** $\rightarrow$ **03. Energizing Stream** $\rightarrow$ **04. Auto-Pay Complete**), illustrating the vehicle entering the bay between the fossil fuel dispenser and 150kW EV fast charger, real-time telemetry increments, and automated digital VAT receipt issuance.
+
+![Fuel&Go 3D Station & Workflow Demo Animation](assets/fuelandgo-workflow-demo.gif)
+
+---
+
+### 3. Python Cost Estimator & Energy Math Interface (Slide 8 — v4 Real-Time Engine)
 Interactive financial & energy calculator powered by Python WebAssembly (Pyodide v0.25) with instant real-time slider reactivity. Dynamically computes **Estimated Session Cost (₪)**, **Energy to Deliver (kWh)**, **ICE Equivalent Cost (₪)**, **Direct Driver Savings (₪ & %)**, **Est. Driving Range Added (km)**, and **Equiv. Petrol Displaced (Liters)** cleanly without console clutter.
 
 ![Python Cost Estimator Interface v4](assets/python-calculator-v4.svg)
 
 ---
 
-### 3. Complete 4-Stage Sequential MVP User Flow Workflow (Slide 5)
+### 4. Complete 4-Stage Sequential MVP User Flow Workflow (Slide 5)
 End-to-end mobile wireframe sequence illustrating the driver journey: **01. Smart Discover** $\rightarrow$ **02. Geofence & Bay Selection** $\rightarrow$ **03. Live Energizing** $\rightarrow$ **04. Auto-Pay & Bilingual 17% VAT Tax Invoice (`כולל מע"מ`)**.
 
 ![Fuel&Go MVP User Flow Wireframes](assets/mvp-user-flow.svg)
@@ -59,8 +66,10 @@ To ensure strict version control, local progress preservation, and clear progres
 ```
 NextMind/
 ├── assets/                        # Brand assets & presentation visual screenshots
-│   ├── fuelandgo-logo.svg         # Primary Fuel&Go logo
+│   ├── fuelandgo-logo.svg         # Primary Fuel&Go logo (with dark theme card backing)
+│   ├── fuelandgo-logo-card.svg    # Full-width dark presentation card logo banner
 │   ├── fuelandgo-icon.svg         # Brand icon / favicon
+│   ├── fuelandgo-workflow-demo.gif# Animated 4-stage 3D station & live workflow demo GIF
 │   ├── mvp-user-flow.svg          # Complete 4-stage sequential MVP User Flow wireframes
 │   └── python-calculator-v4.svg   # v4 Python Cost Estimator & Energy Math interface preview
 ├── current_version.html           # Active working version of the presentation (v4 — always up to date)

@@ -1,5 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 120" width="100%" height="100%">
   <defs>
+    <linearGradient id="cardBgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#070d18"/>
+      <stop offset="100%" stop-color="#0d182e"/>
+    </linearGradient>
     <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#00f2fe"/>
       <stop offset="100%" stop-color="#0284c7"/>
@@ -18,8 +22,11 @@
     </filter>
   </defs>
 
+  <!-- Dark Presentation Theme Card Background (Ensures High-Contrast White "Fuel" Text Visibility) -->
+  <rect x="2" y="2" width="476" height="116" rx="22" fill="url(#cardBgGrad)" stroke="#00f2fe" stroke-opacity="0.35" stroke-width="2"/>
+
   <!-- Icon Mark -->
-  <g transform="translate(10, 10)">
+  <g transform="translate(14, 10)">
     <!-- Rounded Outer Shield / Hexagon -->
     <rect x="5" y="5" width="90" height="90" rx="22" fill="#0c172e" stroke="url(#blueGrad)" stroke-width="2.5" filter="drop-shadow(0px 8px 16px rgba(0,242,254,0.25))"/>
     
@@ -34,7 +41,7 @@
   </g>
 
   <!-- Brand Typography -->
-  <g transform="translate(125, 42)">
+  <g transform="translate(130, 42)">
     <text font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-weight="900" font-size="44" letter-spacing="-0.03em" fill="#ffffff">
       Fuel<tspan fill="url(#orangeGrad)">&amp;</tspan><tspan fill="url(#greenGrad)">Go</tspan>
     </text>
